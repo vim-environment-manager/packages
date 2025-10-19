@@ -41,14 +41,15 @@ for repo_dir in deb rpm homebrew; do
         # remove site files that may have been copied accidentally
         rm -f "$DIR"/.nojekyll 2>/dev/null || true
         rm -f "$DIR"/404.html 2>/dev/null || true
-        rm -f "$DIR"/index.html 2>/dev/null || true
+        # Don't remove index.html as it contains redirect to /repo
+        # rm -f "$DIR"/index.html 2>/dev/null || true
         rm -f "$DIR"/book.js 2>/dev/null || true
         rm -rf "$DIR"/css 2>/dev/null || true
         rm -rf "$DIR"/js 2>/dev/null || true
         rm -rf "$DIR"/fonts 2>/dev/null || true
         rm -rf "$DIR"/search_index.json 2>/dev/null || true
-        # also remove any top-level dists index files accidentally placed
-        find "$DIR" -maxdepth 3 -type f -name "index.html" -exec rm -f {} + 2>/dev/null || true
+        # also remove any deep nested index files accidentally placed (but preserve repo/ redirect)
+        find "$DIR" -mindepth 2 -type f -name "index.html" ! -path "*/repo/index.html" -exec rm -f {} + 2>/dev/null || true
         echo "  ✅ Cleaned $repo_dir directory"
     fi
 done
