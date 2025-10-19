@@ -34,9 +34,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Read versions from file
+    - name: Read versions from file and setup scripts
       id: version
       run: |
+        # Make all scripts executable
+        chmod +x scripts/*.sh
+        
         # Read all versions from VERSION file
         VERSIONS=$(cat VERSION | grep -v '^$' | tr '\n' ' ')
         echo "VEM_VERSIONS=${VERSIONS}" >> $GITHUB_ENV
