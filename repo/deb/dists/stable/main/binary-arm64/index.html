@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEM DEB ARM64 Packages</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            padding: 2rem; 
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .file-list {
+            margin: 1.5rem 0;
+        }
+        .file-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .file-item:hover {
+            background-color: #f8f9fa;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .file-name {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .file-name:hover {
+            text-decoration: underline;
+        }
+        .file-size {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .nav-links {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+        .nav-links a {
+            color: #0066cc;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐧 VEM ARM64 Packages</h1>
+        <p>Package index files for ARM64 architecture</p>
+    </div>
+
+    <div class="nav-links">
+        <a href="../">⬅️ Back to Main</a> |
+        <a href="../../">📦 Stable Distribution</a> |
+        <a href="../../../../">📦 DEB Repository</a>
+    </div>
+
+    <div class="file-list">
+        <h3>📋 Package Index Files</h3>
+        
+        <div class="file-item">
+            <a href="Packages" class="file-name">Packages</a>
+            <span class="file-size">Package index (uncompressed)</span>
+        </div>
+        
+        <div class="file-item">
+            <a href="Packages.gz" class="file-name">Packages.gz</a>
+            <span class="file-size">Package index (gzip compressed)</span>
+        </div>
+    </div>
+
+    <div style="background: #e8f5e8; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0; border-radius: 4px;">
+        <h4>📋 Package Index Files</h4>
+        <p>These files contain package metadata for ARM64 architecture:</p>
+        <ul>
+            <li><strong>Packages</strong> - Plain text package index</li>
+            <li><strong>Packages.gz</strong> - Compressed package index</li>
+        </ul>
+        <p>APT uses these files to resolve dependencies and download packages from the pool.</p>
+        <h5>📦 Install VEM (ARM64):</h5>
+        <pre style="background: #343a40; color: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 0.9rem;">echo "deb https://vim-environment-manager.github.io/packages/repo/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
+sudo apt update
+sudo apt install vem</pre>
+    </div>
+</body>
+</html>
