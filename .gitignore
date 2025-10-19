@@ -16,3 +16,6 @@ mdbook/*/book/
 
 # Keep homebrew .git directory for tap functionality
 # Do NOT ignore repo/homebrew/.git/ - it's needed for Homebrew tap
+# Keep .git archive files for GitHub hosting
+!repo/homebrew/.git-repo.tar.gz
+!repo/homebrew/restore-git.sh
