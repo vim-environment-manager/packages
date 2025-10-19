@@ -9,7 +9,6 @@ on:
   workflow_dispatch:
 
 env:
-  VEM_VERSION: "0.1.0-20251019"
   VEM_SOURCE_URL: "https://github.com/ryo-arima/vem/releases/tag/v0.1.0-20251019"
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -35,6 +34,21 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
+    - name: Read version from file
+      id: version
+      run: |
+        VEM_FULL_VERSION=$(cat VERSION | tr -d '\n')
+        VEM_VERSION=$(echo ${VEM_FULL_VERSION} | cut -d'-' -f1)
+        VEM_DATE=$(echo ${VEM_FULL_VERSION} | cut -d'-' -f2)
+        echo "VEM_VERSION=${VEM_VERSION}" >> $GITHUB_ENV
+        echo "VEM_FULL_VERSION=${VEM_FULL_VERSION}" >> $GITHUB_ENV
+        echo "VEM_VERSION_TAG=v${VEM_FULL_VERSION}" >> $GITHUB_ENV
+        echo "VEM_DATE=${VEM_DATE}" >> $GITHUB_ENV
+        echo "Version: ${VEM_VERSION}"
+        echo "Full Version: ${VEM_FULL_VERSION}"
+        echo "Tag: v${VEM_FULL_VERSION}"
+        echo "Date: ${VEM_DATE}"
+    
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -45,9 +59,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y rpm alien dpkg-dev reprepro createrepo-c gnupg2
         
-        # Install mdbook
-        curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.36/mdbook-v0.4.36-x86_64-unknown-linux-gnu.tar.gz | tar xz
-        sudo mv mdbook /usr/local/bin/
+        # Install mdbook (check if already installed)
+        if ! command -v mdbook &> /dev/null; then
+          echo "Installing mdbook..."
+          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.36/mdbook-v0.4.36-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          sudo mv mdbook /usr/local/bin/
+        else
+          echo "mdbook is already installed: $(mdbook --version)"
+        fi
     
     - name: Create directory structure
       run: |
@@ -58,28 +77,57 @@ jobs:
     
     - name: Download VEM packages
       run: |        
+        echo "Downloading VEM packages"
+        echo "Version: ${VEM_VERSION}"
+        echo "Full Version: ${VEM_FULL_VERSION}"
+        echo "Release Tag: ${VEM_VERSION_TAG}"
+        
         # Download DEB packages
-        wget -O packages/deb/pool/main/v/vem/vem_0.1.0_amd64.deb https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem_0.1.0_amd64.deb || echo "amd64 deb not found"
-        wget -O packages/deb/pool/main/v/vem/vem_0.1.0_arm64.deb https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem_0.1.0_arm64.deb || echo "arm64 deb not found"
+        wget -O packages/deb/pool/main/v/vem/vem_${VEM_VERSION}_amd64.deb https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem_${VEM_VERSION}_amd64.deb || echo "amd64 deb not found"
+        wget -O packages/deb/pool/main/v/vem/vem_${VEM_VERSION}_arm64.deb https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem_${VEM_VERSION}_arm64.deb || echo "arm64 deb not found"
+        wget -O packages/deb/pool/main/v/vem/vem-linux-x86_64.deb https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-linux-x86_64.deb || echo "linux x86_64 deb not found"
+        wget -O packages/deb/pool/main/v/vem/vem-linux-aarch64.deb https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-linux-aarch64.deb || echo "linux aarch64 deb not found"
         
         # Download RPM packages
-        wget -O packages/rpm/vem-0.1.0-1.x86_64.rpm https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-0.1.0-1.x86_64.rpm || echo "x86_64 rpm not found"
-        wget -O packages/rpm/vem-linux-x86_64.rpm https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-linux-x86_64.rpm || echo "linux x86_64 rpm not found"
+        wget -O packages/rpm/vem-${VEM_VERSION}-1.x86_64.rpm https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-${VEM_VERSION}-1.x86_64.rpm || echo "x86_64 rpm not found"
+        wget -O packages/rpm/vem-linux-x86_64.rpm https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-linux-x86_64.rpm || echo "linux x86_64 rpm not found"
+        
+        # Create archive directory for additional downloads
+        mkdir -p packages/archives
+        
+        # Download TAR.GZ archives
+        wget -O packages/archives/vem-${VEM_VERSION}-x86_64.tar.gz https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-${VEM_VERSION}-x86_64.tar.gz || echo "x86_64 tar.gz not found"
+        wget -O packages/archives/vem-${VEM_VERSION}-aarch64.tar.gz https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-${VEM_VERSION}-aarch64.tar.gz || echo "aarch64 tar.gz not found"
+        wget -O packages/archives/vem-${VEM_VERSION}-arm64.tar.gz https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-${VEM_VERSION}-arm64.tar.gz || echo "arm64 tar.gz not found"
+        wget -O packages/archives/vem-linux-x86_64.tar.gz https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-linux-x86_64.tar.gz || echo "linux x86_64 tar.gz not found"
+        wget -O packages/archives/vem-linux-aarch64.tar.gz https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-linux-aarch64.tar.gz || echo "linux aarch64 tar.gz not found"
+        
+        # Download ZIP archives
+        wget -O packages/archives/vem-${VEM_VERSION}-x86_64.zip https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-${VEM_VERSION}-x86_64.zip || echo "x86_64 zip not found"
+        wget -O packages/archives/vem-${VEM_VERSION}-aarch64.zip https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-${VEM_VERSION}-aarch64.zip || echo "aarch64 zip not found"
+        wget -O packages/archives/vem-${VEM_VERSION}-arm64.zip https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-${VEM_VERSION}-arm64.zip || echo "arm64 zip not found"
+        wget -O packages/archives/vem-linux-x86_64.zip https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-linux-x86_64.zip || echo "linux x86_64 zip not found"
+        wget -O packages/archives/vem-linux-aarch64.zip https://github.com/ryo-arima/vem/releases/download/${VEM_VERSION_TAG}/vem-linux-aarch64.zip || echo "linux aarch64 zip not found"
     
     - name: Create DEB repository metadata
       run: |
         cd packages/deb
         
-        # Create Packages files for each architecture
-        if [ -f "pool/main/v/vem/vem_0.1.0_amd64.deb" ]; then
-          dpkg-scanpackages pool/main/v/vem /dev/null | gzip -9c > dists/stable/main/binary-amd64/Packages.gz
-          gunzip -c dists/stable/main/binary-amd64/Packages.gz > dists/stable/main/binary-amd64/Packages
+        # Create Packages files for amd64 architecture
+        if ls pool/main/v/vem/*amd64.deb pool/main/v/vem/*x86_64.deb 2>/dev/null; then
+          dpkg-scanpackages pool/main/v/vem /dev/null | grep -A20 -B5 "amd64\|x86_64" | gzip -9c > dists/stable/main/binary-amd64/Packages.gz 2>/dev/null || true
+          gunzip -c dists/stable/main/binary-amd64/Packages.gz > dists/stable/main/binary-amd64/Packages 2>/dev/null || true
         fi
         
-        if [ -f "pool/main/v/vem/vem_0.1.0_arm64.deb" ]; then
-          dpkg-scanpackages pool/main/v/vem /dev/null | gzip -9c > dists/stable/main/binary-arm64/Packages.gz
-          gunzip -c dists/stable/main/binary-arm64/Packages.gz > dists/stable/main/binary-arm64/Packages
+        # Create Packages files for arm64 architecture  
+        if ls pool/main/v/vem/*arm64.deb pool/main/v/vem/*aarch64.deb 2>/dev/null; then
+          dpkg-scanpackages pool/main/v/vem /dev/null | grep -A20 -B5 "arm64\|aarch64" | gzip -9c > dists/stable/main/binary-arm64/Packages.gz 2>/dev/null || true
+          gunzip -c dists/stable/main/binary-arm64/Packages.gz > dists/stable/main/binary-arm64/Packages 2>/dev/null || true
         fi
+        
+        # Create comprehensive Packages file for all architectures
+        dpkg-scanpackages pool/main/v/vem /dev/null > Packages 2>/dev/null || true
+        gzip -c Packages > Packages.gz 2>/dev/null || true
         
         # Create Release file
         cd dists/stable
@@ -121,10 +169,19 @@ jobs:
     - name: Generate Homebrew formula and tap
       run: |
         mkdir -p packages/homebrew/Formula
+        export VERSION=${VEM_VERSION}
+        export FULL_VERSION=${VEM_FULL_VERSION}
+        export VERSION_TAG=${VEM_VERSION_TAG}
+        export VEM_DATE=${VEM_DATE}
         ./scripts/generate-homebrew.sh
     
     - name: Build mdbook documentation
       run: |
+        export VERSION=${VEM_VERSION}
+        export FULL_VERSION=${VEM_FULL_VERSION}
+        export VERSION_TAG=${VEM_VERSION_TAG}
+        export VEM_DATE=${VEM_DATE}
+        
         # Build DEB documentation
         cd mdbook/deb && mdbook build && cd ../..
         
@@ -136,22 +193,45 @@ jobs:
     
     - name: Create repository metadata and installation scripts
       run: |
+        export VERSION=${VEM_VERSION}
+        export FULL_VERSION=${VEM_FULL_VERSION}
+        export VERSION_TAG=${VEM_VERSION_TAG}
+        export VEM_DATE=${VEM_DATE}
         ./scripts/create-repo-metadata.sh
     
     - name: Generate main index page
       run: |
+        export VERSION=${VEM_VERSION}
+        export FULL_VERSION=${VEM_FULL_VERSION}
+        export VERSION_TAG=${VEM_VERSION_TAG}
+        export VEM_DATE=${VEM_DATE}
         ./scripts/generate-index.sh
     
     - name: Verify build output
       run: |
         echo "Build completed successfully!"
+        echo "=== Package Structure ==="
         ls -la packages/
         
+        echo "=== DEB Packages ==="
+        ls -la packages/deb/pool/main/v/vem/ || echo "No DEB packages found"
+        
+        echo "=== RPM Packages ==="
+        ls -la packages/rpm/*.rpm || echo "No RPM packages found"
+        
+        echo "=== Archive Packages ==="
+        ls -la packages/archives/ || echo "No archive packages found"
+        
+        echo "=== Generated Documentation ==="
         # Check if key files exist
         [ -f "packages/index.html" ] && echo "✅ Main index.html exists" || echo "❌ Main index.html missing"
-        [ -f "packages/deb/index.html" ] && echo "✅ DEB index.html exists" || echo "❌ DEB index.html missing"
+        [ -f "packages/deb/index.html" ] && echo "✅ DEB index.html exists" || echo "❌ DEB index.html missing" 
         [ -f "packages/rpm/index.html" ] && echo "✅ RPM index.html exists" || echo "❌ RPM index.html missing"
         [ -f "packages/homebrew/index.html" ] && echo "✅ Homebrew index.html exists" || echo "❌ Homebrew index.html missing"
+        
+        echo "=== Repository Metadata ==="
+        [ -f "packages/deb/Packages" ] && echo "✅ DEB Packages file exists" || echo "❌ DEB Packages file missing"
+        [ -d "packages/rpm/repodata" ] && echo "✅ RPM repodata exists" || echo "❌ RPM repodata missing"
     
     - name: Setup Pages
       uses: actions/configure-pages@v5
