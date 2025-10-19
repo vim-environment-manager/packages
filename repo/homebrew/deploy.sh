@@ -37,19 +37,19 @@ fi
 if ! git remote get-url origin >/dev/null 2>&1; then
     echo ""
     echo "🔧 Setup required:"
-    echo "1. Create repository: https://github.com/vim-environment-manager/homebrew"
-    echo "2. Add remote: git remote add origin https://github.com/vim-environment-manager/homebrew.git"
+    echo "1. Create repository: https://github.com/vim-environment-manager/homebrew-vem"
+    echo "2. Add remote: git remote add origin https://github.com/vim-environment-manager/homebrew-vem.git"
     echo "3. Push: git push -u origin main"
     echo ""
     echo "After setup, users can install with:"
-    echo "  brew tap vim-environment-manager/homebrew"
+    echo "  brew tap vim-environment-manager/vem"
     echo "  brew install vem"
 else
     echo "🚀 Pushing to remote repository..."
     git push origin main
-    echo "✅ Successfully pushed to homebrew-tap repository"
+    echo "✅ Successfully pushed to homebrew-vem repository"
     echo ""
     echo "Users can now install with:"
-    echo "  brew tap vim-environment-manager/tap"
+    echo "  brew tap vim-environment-manager/vem"
     echo "  brew install vem"
 fi
