@@ -77,18 +77,16 @@ for FULL_VER in ${VERSIONS}; do
     
     echo "🔽 Processing version: ${VER} (${FULL_VER})"
     
-    # Download DEB packages (based on VERSION file)
+    # Download DEB packages (using available format)
     echo "  📥 Downloading DEB packages..."
-    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${FULL_VER}_amd64.deb" && echo "  ✅ Downloaded vem_${FULL_VER}_amd64.deb" || echo "  ⚠️  Failed to download vem_${FULL_VER}_amd64.deb"
-    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${FULL_VER}_arm64.deb" && echo "  ✅ Downloaded vem_${FULL_VER}_arm64.deb" || echo "  ⚠️  Failed to download vem_${FULL_VER}_arm64.deb"
-    # Also download linux generic deb files
     wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.deb" && echo "  ✅ Downloaded vem-linux-x86_64.deb" || echo "  ⚠️  Failed to download vem-linux-x86_64.deb"
     wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.deb" && echo "  ✅ Downloaded vem-linux-aarch64.deb" || echo "  ⚠️  Failed to download vem-linux-aarch64.deb"
     
-    # Download RPM packages
+    # Download RPM packages (using available format)
     echo "  📥 Downloading RPM packages..."
-    wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}.x86_64.rpm" && echo "  ✅ Downloaded vem-${FULL_VER}.x86_64.rpm" || echo "  ⚠️  Failed to download vem-${FULL_VER}.x86_64.rpm"
     wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.rpm" && echo "  ✅ Downloaded vem-linux-x86_64.rpm" || echo "  ⚠️  Failed to download vem-linux-x86_64.rpm"
+    # ARM64 RPM not available in current release
+    # wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.rpm" && echo "  ✅ Downloaded vem-linux-aarch64.rpm" || echo "  ⚠️  Failed to download vem-linux-aarch64.rpm"
     
     # Download tar.gz files for Homebrew
     echo "  📥 Downloading Homebrew archives..."
@@ -98,10 +96,9 @@ for FULL_VER in ${VERSIONS}; do
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.tar.gz" && echo "  ✅ Downloaded vem-linux-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-x86_64.tar.gz"
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.tar.gz" && echo "  ✅ Downloaded vem-linux-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-aarch64.tar.gz"
     
-    # Download zip files for generic use
+    # Download zip files for generic use (using available formats)
     echo "  📥 Downloading ZIP archives..."
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-x86_64.zip" && echo "  ✅ Downloaded vem-${FULL_VER}-x86_64.zip" || echo "  ⚠️  Failed to download vem-${FULL_VER}-x86_64.zip"
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-aarch64.zip" && echo "  ✅ Downloaded vem-${FULL_VER}-aarch64.zip" || echo "  ⚠️  Failed to download vem-${FULL_VER}-aarch64.zip"  
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.zip" && echo "  ✅ Downloaded vem-linux-x86_64.zip" || echo "  ⚠️  Failed to download vem-linux-x86_64.zip"
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.zip" && echo "  ✅ Downloaded vem-linux-aarch64.zip" || echo "  ⚠️  Failed to download vem-linux-aarch64.zip"
 done
