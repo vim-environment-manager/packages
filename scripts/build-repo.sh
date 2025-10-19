@@ -328,6 +328,137 @@ EOF
 # Make scripts executable
 chmod +x "$DOCS_DIR/install"/*.sh
 
+# Create directory index files for repository browsing
+echo "📝 Creating directory index files..."
+
+# Function to create directory index
+create_directory_index() {
+    local dir_path="$1"
+    local dir_name="$2"
+    local parent_path="$3"
+    local description="$4"
+    
+    cat > "$dir_path/index.html" << EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$dir_name - VEM Repository</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            padding: 2rem; 
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .file-list {
+            margin: 1.5rem 0;
+        }
+        .file-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .file-item:hover {
+            background-color: #f8f9fa;
+        }
+        .file-name {
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .file-name a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .file-name a:hover {
+            text-decoration: underline;
+        }
+        .file-size {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📁 $dir_name</h1>
+        <p>$description</p>
+    </div>
+
+    <div class="file-list">
+        <h3>📦 Files</h3>
+EOF
+
+    # List files in directory
+    if [ -d "$dir_path" ]; then
+        for file in "$dir_path"/*; do
+            if [ -f "$file" ] && [ "$(basename "$file")" != "index.html" ]; then
+                filename=$(basename "$file")
+                filesize=$(ls -lh "$file" | awk '{print $5}')
+                echo "        <div class=\"file-item\">" >> "$dir_path/index.html"
+                echo "            <span class=\"file-name\"><a href=\"$filename\">$filename</a></span>" >> "$dir_path/index.html"
+                echo "            <span class=\"file-size\">$filesize</span>" >> "$dir_path/index.html"
+                echo "        </div>" >> "$dir_path/index.html"
+            elif [ -d "$file" ] && [ "$(basename "$file")" != "." ] && [ "$(basename "$file")" != ".." ]; then
+                dirname=$(basename "$file")
+                echo "        <div class=\"file-item\">" >> "$dir_path/index.html"
+                echo "            <span class=\"file-name\"><a href=\"$dirname/\">$dirname/</a></span>" >> "$dir_path/index.html"
+                echo "            <span class=\"file-size\">Directory</span>" >> "$dir_path/index.html"
+                echo "        </div>" >> "$dir_path/index.html"
+            fi
+        done
+    fi
+
+    cat >> "$dir_path/index.html" << EOF
+    </div>
+
+    <div class="back-link">
+        <p><a href="$parent_path">⬅️ Back to Parent Directory</a></p>
+    </div>
+</body>
+</html>
+EOF
+}
+
+# Create directory indexes for RPM repository
+create_directory_index "$REPO_ROOT/repo/rpm/rpms" "RPM Packages" "../" "RPM package files for VEM"
+create_directory_index "$REPO_ROOT/repo/rpm/repodata" "Repository Metadata" "../" "RPM repository metadata files"
+
+# Create directory indexes for DEB repository  
+create_directory_index "$REPO_ROOT/repo/deb/pool" "DEB Packages" "../" "DEB package files for VEM"
+create_directory_index "$REPO_ROOT/repo/deb/dists" "Distribution Metadata" "../" "DEB repository distribution metadata"
+if [ -d "$REPO_ROOT/repo/deb/pool/main" ]; then
+    create_directory_index "$REPO_ROOT/repo/deb/pool/main" "Main Packages" "../" "Main DEB packages"
+fi
+if [ -d "$REPO_ROOT/repo/deb/dists/stable" ]; then
+    create_directory_index "$REPO_ROOT/repo/deb/dists/stable" "Stable Distribution" "../" "Stable distribution metadata"
+fi
+
+# Create directory indexes for Homebrew repository
+create_directory_index "$REPO_ROOT/repo/homebrew/Formula" "Homebrew Formulas" "../" "Homebrew formula files"
+create_directory_index "$REPO_ROOT/repo/homebrew/archives" "Source Archives" "../" "Source archive files for Homebrew"
+
+echo "✅ Directory index files created"
+
 echo "🎉 Package repositories built successfully!"
 echo "📂 Package directories: $REPO_ROOT/repo/{deb,rpm,homebrew}"
 echo "📂 Docs directory: $DOCS_DIR"
