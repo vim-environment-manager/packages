@@ -73,6 +73,17 @@
 brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/repo/homebrew
 brew install vem
         </pre>
+        
+        <h4>🔧 Manual Setup (if tap fails)</h4>
+        <p>If the tap command fails, you can restore the .git directory manually:</p>
+        <pre>
+# Download and extract the repository
+curl -L -o homebrew-tap.tar.gz https://vim-environment-manager.github.io/packages/repo/homebrew/.git-repo.tar.gz
+mkdir -p homebrew-tap && cd homebrew-tap
+curl -L https://vim-environment-manager.github.io/packages/repo/homebrew/Formula/vem.rb -o vem.rb
+tar -xzf ../homebrew-tap.tar.gz
+brew install ./vem.rb
+        </pre>
     </div>
 
     <div class="file-list">
