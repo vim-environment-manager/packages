@@ -70,8 +70,8 @@ jobs:
         # Install mdbook (check if already installed)
         if ! command -v mdbook &> /dev/null; then
           echo "Installing mdbook..."
-          # Remove any existing mdbook file first
-          rm -f mdbook
+          # Remove any existing mdbook file or directory first
+          rm -rf mdbook
           curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.36/mdbook-v0.4.36-x86_64-unknown-linux-gnu.tar.gz | tar xz
           sudo mv mdbook /usr/local/bin/
         else
@@ -89,9 +89,6 @@ jobs:
       run: |        
         echo "Downloading VEM packages for all versions: ${VEM_VERSIONS}"
         
-        # Create archive directory for additional downloads
-        mkdir -p packages/archives
-        
         # Download packages for each version
         for FULL_VER in ${VEM_VERSIONS}; do
           VER=$(echo ${FULL_VER} | cut -d'-' -f1)
@@ -99,30 +96,29 @@ jobs:
           
           echo "Processing version: ${VER} (${FULL_VER})"
           
-          # Download DEB packages
+          # Download DEB packages only
           wget -O packages/deb/pool/main/v/vem/vem_${VER}_amd64.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${VER}_amd64.deb || echo "${VER} amd64 deb not found"
           wget -O packages/deb/pool/main/v/vem/vem_${VER}_arm64.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${VER}_arm64.deb || echo "${VER} arm64 deb not found"
           wget -O packages/deb/pool/main/v/vem/vem-linux-x86_64-${FULL_VER}.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.deb || echo "${VER} linux x86_64 deb not found"
           wget -O packages/deb/pool/main/v/vem/vem-linux-aarch64-${FULL_VER}.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.deb || echo "${VER} linux aarch64 deb not found"
           
-          # Download RPM packages  
+          # Download RPM packages only  
           wget -O packages/rpm/vem-${VER}-1.x86_64.rpm https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-1.x86_64.rpm || echo "${VER} x86_64 rpm not found"
           wget -O packages/rpm/vem-linux-x86_64-${FULL_VER}.rpm https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.rpm || echo "${VER} linux x86_64 rpm not found"
-          
-          # Download TAR.GZ archives
-          wget -O packages/archives/vem-${VER}-x86_64.tar.gz https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-x86_64.tar.gz || echo "${VER} x86_64 tar.gz not found"
-          wget -O packages/archives/vem-${VER}-aarch64.tar.gz https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-aarch64.tar.gz || echo "${VER} aarch64 tar.gz not found"
-          wget -O packages/archives/vem-${VER}-arm64.tar.gz https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-arm64.tar.gz || echo "${VER} arm64 tar.gz not found"
-          wget -O packages/archives/vem-linux-x86_64-${FULL_VER}.tar.gz https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.tar.gz || echo "${VER} linux x86_64 tar.gz not found"
-          wget -O packages/archives/vem-linux-aarch64-${FULL_VER}.tar.gz https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.tar.gz || echo "${VER} linux aarch64 tar.gz not found"
-          
-          # Download ZIP archives
-          wget -O packages/archives/vem-${VER}-x86_64.zip https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-x86_64.zip || echo "${VER} x86_64 zip not found"
-          wget -O packages/archives/vem-${VER}-aarch64.zip https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-aarch64.zip || echo "${VER} aarch64 zip not found"
-          wget -O packages/archives/vem-${VER}-arm64.zip https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-arm64.zip || echo "${VER} arm64 zip not found"
-          wget -O packages/archives/vem-linux-x86_64-${FULL_VER}.zip https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.zip || echo "${VER} linux x86_64 zip not found"
-          wget -O packages/archives/vem-linux-aarch64-${FULL_VER}.zip https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.zip || echo "${VER} linux aarch64 zip not found"
         done
+        
+        # Download TAR.GZ archives for Homebrew (latest version only)
+        LATEST_FULL_VER=$(echo ${VEM_VERSIONS} | cut -d' ' -f1)
+        LATEST_VER=$(echo ${LATEST_FULL_VER} | cut -d'-' -f1)
+        LATEST_TAG="v${LATEST_FULL_VER}"
+        
+        echo "Downloading Homebrew archives for latest version: ${LATEST_VER} (${LATEST_FULL_VER})"
+        mkdir -p packages/homebrew/archives
+        
+        # Download TAR.GZ archives for Homebrew
+        wget -O packages/homebrew/archives/vem-${LATEST_VER}-x86_64.tar.gz https://github.com/ryo-arima/vem/releases/download/${LATEST_TAG}/vem-${LATEST_VER}-x86_64.tar.gz || echo "Homebrew x86_64 tar.gz not found"
+        wget -O packages/homebrew/archives/vem-${LATEST_VER}-aarch64.tar.gz https://github.com/ryo-arima/vem/releases/download/${LATEST_TAG}/vem-${LATEST_VER}-aarch64.tar.gz || echo "Homebrew aarch64 tar.gz not found"
+        wget -O packages/homebrew/archives/vem-${LATEST_VER}-arm64.tar.gz https://github.com/ryo-arima/vem/releases/download/${LATEST_TAG}/vem-${LATEST_VER}-arm64.tar.gz || echo "Homebrew arm64 tar.gz not found"
     
     - name: Create DEB repository metadata
       run: |
@@ -234,8 +230,8 @@ jobs:
         echo "=== RPM Packages ==="
         ls -la packages/rpm/*.rpm || echo "No RPM packages found"
         
-        echo "=== Archive Packages ==="
-        ls -la packages/archives/ || echo "No archive packages found"
+        echo "=== Homebrew Archive Packages ==="
+        ls -la packages/homebrew/archives/ || echo "No Homebrew archive packages found"
         
         echo "=== Generated Documentation ==="
         # Check if key files exist
