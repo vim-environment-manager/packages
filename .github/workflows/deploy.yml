@@ -62,18 +62,6 @@ jobs:
         [ -f "repo/homebrew/index.html" ] && echo "✅ Homebrew repo exists" || { echo "❌ Homebrew repo missing"; exit 1; }
         echo "🎉 All files verified successfully"
         
-    - name: Restore Homebrew .git repository
-      run: |
-        echo "🔧 Restoring Homebrew .git directory..."
-        if [ -f "repo/homebrew/.git-repo.tar.gz" ]; then
-          cd repo/homebrew
-          tar -xzf .git-repo.tar.gz
-          echo "✅ Homebrew .git directory restored"
-          ls -la .git/
-        else
-          echo "⚠️  .git-repo.tar.gz not found, Homebrew tap may not work properly"
-        fi
-        
     - name: Setup Pages
       uses: actions/configure-pages@v5
       
