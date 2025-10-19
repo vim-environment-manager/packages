@@ -50,6 +50,12 @@ for repo_dir in deb rpm homebrew; do
         rm -rf "$DIR"/search_index.json 2>/dev/null || true
         # also remove any deep nested index files accidentally placed (but preserve top-level index.html)
         find "$DIR" -mindepth 2 -type f -name "index.html" -exec rm -f {} + 2>/dev/null || true
+        
+        # For homebrew directory, preserve .git directory for tap functionality
+        if [ "$repo_dir" = "homebrew" ]; then
+            echo "  📝 Preserving .git directory for homebrew tap"
+        fi
+        
         echo "  ✅ Cleaned $repo_dir directory"
     fi
 done
@@ -540,7 +546,29 @@ create_directory_index "$REPO_ROOT/repo/homebrew/archives" "Source Archives" "..
 
 echo "✅ Directory index files created"
 
+# Ensure homebrew .git directory is included in the main repository
+echo "📝 Adding homebrew .git directory to main repository..."
+cd "$REPO_ROOT"
+
+# Remove homebrew from .gitignore if it exists
+if [ -f ".gitignore" ]; then
+    sed -i.bak '/^repo\/homebrew\/\.git/d' .gitignore 2>/dev/null || true
+    sed -i.bak '/^repo\/homebrew\/\.git\//d' .gitignore 2>/dev/null || true
+fi
+
+# Force add the homebrew .git directory to the main repository
+if [ -d "repo/homebrew/.git" ]; then
+    git add -f repo/homebrew/.git/
+    git add -f repo/homebrew/
+    echo "✅ Homebrew .git directory added to main repository"
+else
+    echo "⚠️  Homebrew .git directory not found"
+fi
+
 echo "🎉 Package repositories built successfully!"
 echo "📂 Package directories: $REPO_ROOT/repo/{deb,rpm,homebrew}"
 echo "📂 Docs directory: $DOCS_DIR"
 echo "🌐 Ready for deployment to GitHub Pages"
+echo ""
+echo "💡 Note: The homebrew directory contains a .git repository for Homebrew tap functionality"
+echo "💡 Make sure to commit the entire repo/homebrew directory including .git to your main repository"
