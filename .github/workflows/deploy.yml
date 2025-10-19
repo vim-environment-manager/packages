@@ -28,7 +28,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Check for docs directory
+    - name: Check for required directories
       run: |
         if [ ! -d "docs" ]; then
           echo "❌ docs directory not found!"
@@ -38,6 +38,13 @@ jobs:
         fi
         echo "✅ docs directory found"
         
+        if [ ! -d "repo" ]; then
+          echo "❌ repo directory not found!"
+          echo "📝 Please run 'make build' locally and commit the repo/ directory"
+          exit 1
+        fi
+        echo "✅ repo directory found"
+        
     - name: Verify deployment files
       run: |
         echo "🔍 Verifying deployment files..."
@@ -46,6 +53,12 @@ jobs:
         [ -f "docs/deb/index.html" ] && echo "✅ DEB docs exist" || { echo "❌ DEB docs missing"; exit 1; }
         [ -f "docs/rpm/index.html" ] && echo "✅ RPM docs exist" || { echo "❌ RPM docs missing"; exit 1; }
         [ -f "docs/homebrew/index.html" ] && echo "✅ Homebrew docs exist" || { echo "❌ Homebrew docs missing"; exit 1; }
+        
+        echo "🔍 Verifying repository files..."
+        [ -f "repo/index.html" ] && echo "✅ Repo index exists" || { echo "❌ Repo index missing"; exit 1; }
+        [ -f "repo/deb/index.html" ] && echo "✅ DEB repo exists" || { echo "❌ DEB repo missing"; exit 1; }
+        [ -f "repo/rpm/index.html" ] && echo "✅ RPM repo exists" || { echo "❌ RPM repo missing"; exit 1; }
+        [ -f "repo/homebrew/index.html" ] && echo "✅ Homebrew repo exists" || { echo "❌ Homebrew repo missing"; exit 1; }
         echo "🎉 All files verified successfully"
         
     - name: Setup Pages
@@ -54,7 +67,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './docs'
+        path: '.'
         
     - name: Deploy to GitHub Pages
       id: deployment

@@ -9,8 +9,8 @@ cat > docs/index.html << 'EOF'
 <head>
     <meta charset="utf-8">
     <title>VEM Package Repository</title>
-    <meta http-equiv="refresh" content="0; url=base/">
-    <link rel="canonical" href="base/">
+    <meta http-equiv="refresh" content="0; url=docs/">
+    <link rel="canonical" href="docs/">
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
@@ -41,9 +41,9 @@ cat > docs/index.html << 'EOF'
         <h1>🚀 VEM Package Repository</h1>
         <div class="loading">
             <p>Redirecting to documentation...</p>
-            <p>If you are not redirected automatically, <a href="base/">click here</a>.</p>
+            <p>If you are not redirected automatically, <a href="docs/">click here</a>.</p>
         </div>
-        <p><a href="base/">📖 Go to Documentation</a></p>
+        <p><a href="docs/">📖 Go to Documentation</a></p>
     </div>
 </body>
 </html>
