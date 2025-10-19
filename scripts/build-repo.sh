@@ -254,6 +254,87 @@ end
 EOF
 echo "✅ Homebrew Formula created"
 
+# Create .gitignore for Homebrew repository
+cat > "$REPO_ROOT/repo/homebrew/.gitignore" << 'GITIGNORE_EOF'
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archive files (these are served by GitHub Pages but not needed in git)
+archives/*.tar.gz
+archives/*.zip
+archives/*.tar.xz
+
+# Keep directory structure
+!archives/.gitkeep
+GITIGNORE_EOF
+
+# Create .gitkeep for archives directory
+mkdir -p "$REPO_ROOT/repo/homebrew/archives"
+touch "$REPO_ROOT/repo/homebrew/archives/.gitkeep"
+
+# Create README.md for Homebrew tap
+cat > "$REPO_ROOT/repo/homebrew/README.md" << 'README_EOF'
+# VEM Homebrew Tap
+
+This is the official Homebrew tap for VEM (Vim Environment Manager).
+
+## Installation
+
+Add the tap and install VEM:
+
+```bash
+brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/repo/homebrew
+brew install vem
+```
+
+## About VEM
+
+VEM (Vim Environment Manager) is a tool for managing Vim environments.
+
+- **Homepage**: https://github.com/ryo-arima/vem
+- **Documentation**: https://vim-environment-manager.github.io/packages/docs/
+
+## Support
+
+For issues and support, please visit the [VEM repository](https://github.com/ryo-arima/vem/issues).
+README_EOF
+
+# Initialize Git repository for Homebrew tap
+echo "🔧 Initializing Git repository for Homebrew tap..."
+cd "$REPO_ROOT/repo/homebrew"
+
+# Check if already a git repository
+if [ ! -d ".git" ]; then
+    git init
+    echo "📝 Git repository initialized"
+else
+    echo "📝 Git repository already exists"
+fi
+
+# Configure git user if not set
+if [ -z "$(git config user.name 2>/dev/null)" ]; then
+    git config user.name "VEM Package Bot"
+    git config user.email "packages@vim-environment-manager.github.io"
+    echo "📝 Git user configured"
+fi
+
+# Add and commit files
+git add .
+if git diff --cached --quiet; then
+    echo "📝 No changes to commit"
+else
+    git commit -m "Update VEM Homebrew Formula v${VEM_VERSION}" || echo "📝 Commit created/updated"
+fi
+
+echo "✅ Homebrew Git repository ready"
+cd "$REPO_ROOT"
+
 # Create installation scripts for docs directory
 echo "📜 Creating installation scripts..."
 mkdir -p "$DOCS_DIR/install"

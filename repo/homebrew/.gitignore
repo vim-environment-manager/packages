@@ -1,0 +1,16 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archive files (these are served by GitHub Pages but not needed in git)
+archives/*.tar.gz
+archives/*.zip
+archives/*.tar.xz
+
+# Keep directory structure
+!archives/.gitkeep
