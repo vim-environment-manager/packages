@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Package Details</title>
+        <title>Package Types - VEM Package Repository</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="">
+        <meta name="description" content="Vim Environment Manager Package Repository Documentation">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -34,8 +34,8 @@
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "";
-            const default_light_theme = "light";
-            const default_dark_theme = "navy";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "ayu";
             window.path_to_searchindex_js = "searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
@@ -77,7 +77,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('light')
+            html.classList.remove('ayu')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -138,11 +138,14 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title"></h1>
+                    <h1 class="menu-title">VEM Package Repository</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/ryo-arima/vem" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
                     </div>
@@ -175,71 +178,31 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="package-details"><a class="header" href="#package-details">Package Details</a></h1>
-<h2 id="available-packages"><a class="header" href="#available-packages">Available Packages</a></h2>
-<h3 id="vem-core-package"><a class="header" href="#vem-core-package">VEM Core Package</a></h3>
-<div class="table-wrapper"><table><thead><tr><th>Package</th><th>Architecture</th><th>Version</th><th>Size</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>vem_0.1.0_amd64.deb</code></td><td>amd64</td><td>0.1.0</td><td>~624 KB</td><td>VEM for 64-bit Intel/AMD systems</td></tr>
-<tr><td><code>vem_0.1.0_arm64.deb</code></td><td>arm64</td><td>0.1.0</td><td>~596 KB</td><td>VEM for 64-bit ARM systems</td></tr>
-</tbody></table>
-</div>
-<h2 id="package-information"><a class="header" href="#package-information">Package Information</a></h2>
-<h3 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h3>
-<p>VEM requires the following packages:</p>
-<ul>
-<li><code>vim</code> - The Vim text editor</li>
-<li>Standard system libraries (automatically resolved)</li>
-</ul>
-<h3 id="files-installed"><a class="header" href="#files-installed">Files Installed</a></h3>
-<p>When you install VEM, the following files are added to your system:</p>
-<pre><code>/usr/local/bin/vem                    # Main VEM executable
-/usr/local/share/man/man1/vem.1       # Manual page
-/usr/local/share/doc/vem/README.md    # Documentation
-/usr/local/share/doc/vem/LICENSE      # License file
-</code></pre>
-<h3 id="post-installation"><a class="header" href="#post-installation">Post-installation</a></h3>
-<p>After installation, VEM is immediately available in your PATH. You can run:</p>
-<pre><code class="language-bash"># Show version
-vem --version
-
-# Show help
-vem --help
-
-# Start using VEM
-vem init
-</code></pre>
-<h2 id="package-checksums"><a class="header" href="#package-checksums">Package Checksums</a></h2>
-<p>For security verification:</p>
-<h3 id="vem_010_amd64deb"><a class="header" href="#vem_010_amd64deb">vem_0.1.0_amd64.deb</a></h3>
-<ul>
-<li><strong>SHA256</strong>: <code>98bb2b3d11d74ef1e51d8aa20a1eb3d6d9286a2be364ba4032fa880ee4174cf6</code></li>
-</ul>
-<h3 id="vem_010_arm64deb"><a class="header" href="#vem_010_arm64deb">vem_0.1.0_arm64.deb</a></h3>
-<ul>
-<li><strong>SHA256</strong>: <code>4ee2ffebbd1d6eb0611673c8b44e43e1e372f69e5e789b338d983da2146516f7</code></li>
-</ul>
-<h2 id="maintenance"><a class="header" href="#maintenance">Maintenance</a></h2>
-<h3 id="updates"><a class="header" href="#updates">Updates</a></h3>
-<p>VEM will automatically check for updates when installed via the repository. Update with:</p>
-<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade vem
-</code></pre>
-<h3 id="removal"><a class="header" href="#removal">Removal</a></h3>
-<p>To remove VEM:</p>
-<pre><code class="language-bash">sudo apt remove vem
-</code></pre>
-<p>To remove VEM and its configuration:</p>
-<pre><code class="language-bash">sudo apt purge vem
-</code></pre>
+                        <h1 id="package-types"><a class="header" href="#package-types">Package Types</a></h1>
+<p>VEM provides packages in multiple formats to support different platforms and package managers.</p>
+<h2 id="-deb-packages"><a class="header" href="#-deb-packages">🐧 DEB Packages</a></h2>
+<p>For Debian and Ubuntu based systems.</p>
+<p><strong>Repository URL</strong>: <code>https://vim-environment-manager.github.io/packages/deb</code></p>
+<p><a href="../deb/">🔗 Go to DEB Documentation</a></p>
+<hr />
+<h2 id="-rpm-packages"><a class="header" href="#-rpm-packages">🎩 RPM Packages</a></h2>
+<p>For RedHat, CentOS, Fedora, and openSUSE systems.</p>
+<p><strong>Repository URL</strong>: <code>https://vim-environment-manager.github.io/packages/rpm</code></p>
+<p><a href="../rpm/">🔗 Go to RPM Documentation</a></p>
+<hr />
+<h2 id="-homebrew-tap"><a class="header" href="#-homebrew-tap">🍺 Homebrew Tap</a></h2>
+<p>For macOS systems using Homebrew.</p>
+<p><strong>Tap URL</strong>: <code>https://vim-environment-manager.github.io/packages/homebrew</code></p>
+<p><a href="../homebrew/docs/">🔗 Go to Homebrew Documentation</a></p>
+<hr />
+<p>Choose the appropriate package type for your system and follow the installation instructions in the respective documentation.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="installation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
 
-                            <a rel="next prefetch" href="repository.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="deb.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -249,11 +212,8 @@ vem init
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="installation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
 
-                    <a rel="next prefetch" href="repository.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="deb.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

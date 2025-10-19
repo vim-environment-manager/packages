@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction</title>
+        <title>DEB Packages - VEM Package Repository</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="">
+        <meta name="description" content="Vim Environment Manager Package Repository Documentation">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -34,8 +34,8 @@
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "";
-            const default_light_theme = "light";
-            const default_dark_theme = "navy";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "ayu";
             window.path_to_searchindex_js = "searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
@@ -77,7 +77,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('light')
+            html.classList.remove('ayu')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -138,11 +138,14 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title"></h1>
+                    <h1 class="menu-title">VEM Package Repository</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/ryo-arima/vem" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
                     </div>
@@ -175,66 +178,42 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="vem-rpm-repository"><a class="header" href="#vem-rpm-repository">VEM RPM Repository</a></h1>
-<p>Welcome to the VEM (Vim Environment Manager) RPM Repository! This repository provides RPM packages for RedHat, CentOS, Fedora, openSUSE, and other RPM-based distributions.</p>
-<h2 id="-what-is-vem"><a class="header" href="#-what-is-vem">🎩 What is VEM?</a></h2>
-<p>VEM (Vim Environment Manager) is a powerful tool for managing Vim environments, allowing you to easily switch between different Vim configurations and plugins.</p>
-<h2 id="-quick-start"><a class="header" href="#-quick-start">🚀 Quick Start</a></h2>
-<p>To get started with VEM on your RPM-based system:</p>
-<ol>
-<li>
-<p><strong>Add the repository</strong>:</p>
-<pre><code class="language-bash">sudo tee /etc/yum.repos.d/vem.repo &lt;&lt;EOF
-[vem]
-name=VEM Repository
-baseurl=https://vim-environment-manager.github.io/packages/rpm
-enabled=1
-gpgcheck=0
-EOF
+                        <h1 id="deb-packages"><a class="header" href="#deb-packages">DEB Packages</a></h1>
+<h2 id="-debianubuntu-installation"><a class="header" href="#-debianubuntu-installation">🐧 Debian/Ubuntu Installation</a></h2>
+<p>VEM provides native DEB packages for Debian and Ubuntu based systems.</p>
+<h3 id="supported-distributions"><a class="header" href="#supported-distributions">Supported Distributions</a></h3>
+<ul>
+<li>Ubuntu 20.04+ (Focal, Jammy, Noble)</li>
+<li>Debian 11+ (Bullseye, Bookworm)</li>
+</ul>
+<h3 id="supported-architectures"><a class="header" href="#supported-architectures">Supported Architectures</a></h3>
+<ul>
+<li>amd64 (x86_64)</li>
+<li>arm64 (aarch64)</li>
+</ul>
+<h2 id="-installation-methods"><a class="header" href="#-installation-methods">🚀 Installation Methods</a></h2>
+<h3 id="repository-installation-recommended"><a class="header" href="#repository-installation-recommended">Repository Installation (Recommended)</a></h3>
+<pre><code class="language-bash">echo "deb https://vim-environment-manager.github.io/packages/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
+sudo apt update
+sudo apt install vem
 </code></pre>
-</li>
-<li>
-<p><strong>Install VEM</strong>:</p>
-<pre><code class="language-bash"># For Fedora/CentOS Stream/RHEL 8+
-sudo dnf install vem
-
-# For CentOS 7/RHEL 7
-sudo yum install vem
-
-# For openSUSE
-sudo zypper install vem
+<h3 id="one-liner-installation"><a class="header" href="#one-liner-installation">One-liner Installation</a></h3>
+<pre><code class="language-bash">curl -fsSL https://vim-environment-manager.github.io/packages/install/install-deb.sh | bash
 </code></pre>
-</li>
-</ol>
-<h2 id="-supported-distributions"><a class="header" href="#-supported-distributions">🎯 Supported Distributions</a></h2>
-<ul>
-<li><strong>Fedora</strong> (all supported versions)</li>
-<li><strong>CentOS Stream</strong> (8, 9)</li>
-<li><strong>RHEL</strong> (7, 8, 9)</li>
-<li><strong>Rocky Linux</strong> (8, 9)</li>
-<li><strong>AlmaLinux</strong> (8, 9)</li>
-<li><strong>openSUSE Leap</strong> (15.x)</li>
-<li><strong>openSUSE Tumbleweed</strong></li>
-</ul>
-<h2 id="-repository-information"><a class="header" href="#-repository-information">📋 Repository Information</a></h2>
-<ul>
-<li><strong>Repository URL</strong>: <code>https://vim-environment-manager.github.io/packages/rpm</code></li>
-<li><strong>Package Format</strong>: RPM</li>
-<li><strong>Architecture Support</strong>: x86_64</li>
-</ul>
-<h2 id="-links"><a class="header" href="#-links">🔗 Links</a></h2>
-<ul>
-<li><a href="https://github.com/ryo-arima/vem">GitHub Repository</a></li>
-<li><a href="https://vim-environment-manager.github.io/packages/">Main Package Repository</a></li>
-<li><a href="../install/">Installation Scripts</a></li>
-</ul>
+<h2 id="-full-documentation"><a class="header" href="#-full-documentation">📚 Full Documentation</a></h2>
+<p>For detailed installation instructions, repository setup, and troubleshooting:</p>
+<p><a href="../deb/docs/">🔗 <strong>Go to DEB Documentation</strong></a></p>
+<p>This will take you to the complete DEB package documentation with step-by-step guides.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="packages.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="installation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="rpm.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -244,8 +223,11 @@ sudo zypper install vem
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="packages.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="installation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="rpm.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

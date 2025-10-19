@@ -1,0 +1,20 @@
+[book]
+title = "VEM Package Repository"
+authors = ["VEM Team"]
+description = "Vim Environment Manager Package Repository Documentation"
+src = "src"
+
+[build]
+build-dir = "../../base"
+
+[output.html]
+default-theme = "ayu"
+preferred-dark-theme = "ayu"
+git-repository-url = "https://github.com/ryo-arima/vem"
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.search]
+enable = true

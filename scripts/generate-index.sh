@@ -8,7 +8,15 @@ VERSION="0.1.0"
 PACKAGE_NAME="vem"
 HOMEPAGE="https://github.com/ryo-arima/vem"
 
-# Create main index page
+# Check if --redirects-only flag is passed
+REDIRECTS_ONLY=false
+if [ "$1" = "--redirects-only" ]; then
+    REDIRECTS_ONLY=true
+    echo "Only generating redirect pages for package directories..."
+fi
+
+# Create main index page (only if not redirects-only mode)
+if [ "$REDIRECTS_ONLY" = false ]; then
 cat > packages/index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
@@ -298,3 +306,103 @@ vim-environment-manager/packages
 EOF
 
 echo "Index page generated successfully: packages/index.html"
+fi
+
+# Create redirect index.html files for package directories
+echo "Creating redirect index.html files..."
+
+# DEB Repository redirect
+cat > packages/deb/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>VEM DEB Repository</title>
+    <meta http-equiv="refresh" content="0; url=docs/">
+    <link rel="canonical" href="docs/">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 2rem; }
+        .container { max-width: 600px; margin: 0 auto; text-align: center; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐧 VEM DEB Repository</h1>
+        <p>Redirecting to <a href="docs/">documentation</a>...</p>
+        <ul>
+            <li><a href="docs/">📖 Documentation</a></li>
+            <li><a href="dists/">📦 Repository Metadata</a></li>
+            <li><a href="pool/">💾 Package Pool</a></li>
+        </ul>
+    </div>
+</body>
+</html>
+EOF
+
+# RPM Repository redirect
+cat > packages/rpm/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>VEM RPM Repository</title>
+    <meta http-equiv="refresh" content="0; url=docs/">
+    <link rel="canonical" href="docs/">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 2rem; }
+        .container { max-width: 600px; margin: 0 auto; text-align: center; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎩 VEM RPM Repository</h1>
+        <p>Redirecting to <a href="docs/">documentation</a>...</p>
+        <ul>
+            <li><a href="docs/">📖 Documentation</a></li>
+            <li><a href="repodata/">📦 Repository Metadata</a></li>
+        </ul>
+    </div>
+</body>
+</html>
+EOF
+
+# Homebrew Tap redirect
+cat > packages/homebrew/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>VEM Homebrew Tap</title>
+    <meta http-equiv="refresh" content="0; url=docs/">
+    <link rel="canonical" href="docs/">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 2rem; }
+        .container { max-width: 600px; margin: 0 auto; text-align: center; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍺 VEM Homebrew Tap</h1>
+        <p>Redirecting to <a href="docs/">documentation</a>...</p>
+        <ul>
+            <li><a href="docs/">📖 Documentation</a></li>
+            <li><a href="Formula/">🍺 Formula Files</a></li>
+        </ul>
+    </div>
+</body>
+</html>
+EOF
+
+echo "Redirect index.html files created for deb, rpm, and homebrew directories"

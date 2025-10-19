@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Troubleshooting</title>
+        <title>RPM Packages - VEM Package Repository</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="">
+        <meta name="description" content="Vim Environment Manager Package Repository Documentation">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -34,8 +34,8 @@
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "";
-            const default_light_theme = "light";
-            const default_dark_theme = "navy";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "ayu";
             window.path_to_searchindex_js = "searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
@@ -77,7 +77,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('light')
+            html.classList.remove('ayu')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -138,11 +138,14 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title"></h1>
+                    <h1 class="menu-title">VEM Package Repository</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/ryo-arima/vem" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
                     </div>
@@ -175,16 +178,59 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
+                        <h1 id="rpm-packages"><a class="header" href="#rpm-packages">RPM Packages</a></h1>
+<h2 id="-redhatcentosfedora-installation"><a class="header" href="#-redhatcentosfedora-installation">🎩 RedHat/CentOS/Fedora Installation</a></h2>
+<p>VEM provides native RPM packages for RedHat-based distributions.</p>
+<h3 id="supported-distributions"><a class="header" href="#supported-distributions">Supported Distributions</a></h3>
+<ul>
+<li>Fedora (latest)</li>
+<li>CentOS 7+</li>
+<li>RHEL 8+</li>
+<li>CentOS Stream</li>
+<li>openSUSE Leap/Tumbleweed</li>
+</ul>
+<h3 id="supported-architectures"><a class="header" href="#supported-architectures">Supported Architectures</a></h3>
+<ul>
+<li>x86_64</li>
+</ul>
+<h2 id="-installation-methods"><a class="header" href="#-installation-methods">🚀 Installation Methods</a></h2>
+<h3 id="repository-installation-recommended"><a class="header" href="#repository-installation-recommended">Repository Installation (Recommended)</a></h3>
+<pre><code class="language-bash">sudo tee /etc/yum.repos.d/vem.repo &lt;&lt;EOF
+[vem]
+name=VEM Repository
+baseurl=https://vim-environment-manager.github.io/packages/rpm
+enabled=1
+gpgcheck=0
+EOF
+
+# Fedora/CentOS 8+
+sudo dnf install vem
+
+# CentOS 7/RHEL 7
+sudo yum install vem
+
+# openSUSE
+sudo zypper refresh &amp;&amp; sudo zypper install vem
+</code></pre>
+<h3 id="one-liner-installation"><a class="header" href="#one-liner-installation">One-liner Installation</a></h3>
+<pre><code class="language-bash">curl -fsSL https://vim-environment-manager.github.io/packages/install/install-rpm.sh | bash
+</code></pre>
+<h2 id="-full-documentation"><a class="header" href="#-full-documentation">📚 Full Documentation</a></h2>
+<p>For detailed installation instructions, repository setup, and troubleshooting:</p>
+<p><a href="../rpm/docs/">🔗 <strong>Go to RPM Documentation</strong></a></p>
+<p>This will take you to the complete RPM package documentation with step-by-step guides.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="development.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="deb.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next prefetch" href="homebrew.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -192,10 +238,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="development.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="deb.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next prefetch" href="homebrew.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

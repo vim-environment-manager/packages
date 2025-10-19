@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Installation</title>
+        <title>Installation Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -175,17 +175,38 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+                        <h1 id="vem-homebrew-installation"><a class="header" href="#vem-homebrew-installation">VEM Homebrew Installation</a></h1>
+<h2 id="-quick-installation"><a class="header" href="#-quick-installation">🚀 Quick Installation</a></h2>
+<p>Add the tap and install VEM:</p>
+<pre><code class="language-bash">brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/homebrew
+brew install vem
+</code></pre>
+<h2 id="-one-liner-installation"><a class="header" href="#-one-liner-installation">📦 One-liner Installation</a></h2>
+<pre><code class="language-bash">curl -fsSL https://vim-environment-manager.github.io/packages/install/install-homebrew.sh | bash
+</code></pre>
+<h2 id="-manual-installation"><a class="header" href="#-manual-installation">💾 Manual Installation</a></h2>
+<p>Download and install manually:</p>
+<pre><code class="language-bash"># Download TAR.GZ
+wget https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-darwin-amd64.tar.gz
+tar -xzf vem-darwin-amd64.tar.gz
+sudo mv vem /usr/local/bin/
+
+# For ARM64 (Apple Silicon)
+wget https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-darwin-arm64.tar.gz
+tar -xzf vem-darwin-arm64.tar.gz
+sudo mv vem /usr/local/bin/
+</code></pre>
+<h2 id="-verify-installation"><a class="header" href="#-verify-installation">✅ Verify Installation</a></h2>
+<pre><code class="language-bash">vem --version
+vem --help
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
 
-                            <a rel="next prefetch" href="formula.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="development.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -195,11 +216,8 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
 
-                    <a rel="next prefetch" href="formula.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="development.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Troubleshooting</title>
+        <title>Package Types - VEM Package Repository</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="">
+        <meta name="description" content="Vim Environment Manager Package Repository Documentation">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -34,8 +34,8 @@
         <!-- Provide site root and default themes to javascript -->
         <script>
             const path_to_root = "";
-            const default_light_theme = "light";
-            const default_dark_theme = "navy";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "ayu";
             window.path_to_searchindex_js = "searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
@@ -77,7 +77,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('light')
+            html.classList.remove('ayu')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -138,11 +138,14 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title"></h1>
+                    <h1 class="menu-title">VEM Package Repository</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/ryo-arima/vem" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
                     </div>
@@ -175,16 +178,33 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
+                        <h1 id="package-types"><a class="header" href="#package-types">Package Types</a></h1>
+<p>VEM provides packages in multiple formats to support different platforms and package managers.</p>
+<h2 id="-deb-packages"><a class="header" href="#-deb-packages">🐧 DEB Packages</a></h2>
+<p>For Debian and Ubuntu based systems.</p>
+<p><strong>Repository URL</strong>: <code>https://vim-environment-manager.github.io/packages/deb</code></p>
+<p><a href="../deb/">🔗 Go to DEB Documentation</a></p>
+<hr />
+<h2 id="-rpm-packages"><a class="header" href="#-rpm-packages">🎩 RPM Packages</a></h2>
+<p>For RedHat, CentOS, Fedora, and openSUSE systems.</p>
+<p><strong>Repository URL</strong>: <code>https://vim-environment-manager.github.io/packages/rpm</code></p>
+<p><a href="../rpm/">🔗 Go to RPM Documentation</a></p>
+<hr />
+<h2 id="-homebrew-tap"><a class="header" href="#-homebrew-tap">🍺 Homebrew Tap</a></h2>
+<p>For macOS systems using Homebrew.</p>
+<p><strong>Tap URL</strong>: <code>https://vim-environment-manager.github.io/packages/homebrew</code></p>
+<p><a href="../homebrew/docs/">🔗 Go to Homebrew Documentation</a></p>
+<hr />
+<p>Choose the appropriate package type for your system and follow the installation instructions in the respective documentation.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="repository.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
 
+                            <a rel="next prefetch" href="deb.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -192,10 +212,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="repository.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
 
+                    <a rel="next prefetch" href="deb.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

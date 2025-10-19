@@ -214,10 +214,20 @@ jobs:
         echo "Looking for mdbook directory:"
         find . -name "mdbook" -type d
         
-        # Check if mdbook directories exist
+        # Check if mdbook directories exist and build documentation
+        if [ -d "mdbook/base" ]; then
+          echo "✅ mdbook/base exists"
+          cd mdbook/base && mdbook build && cd ../..
+          # Base documentation is already built to packages/base/ via book.toml configuration
+          echo "Base documentation built to packages/base/"
+        else
+          echo "❌ mdbook/base does not exist"
+        fi
+        
         if [ -d "mdbook/deb" ]; then
           echo "✅ mdbook/deb exists"
           cd mdbook/deb && mdbook build && cd ../..
+          # Copy documentation directly to deb root directory
           cp -r mdbook/deb/book/* packages/deb/ || echo "Failed to copy deb documentation"
         else
           echo "❌ mdbook/deb does not exist"
@@ -226,6 +236,7 @@ jobs:
         if [ -d "mdbook/rpm" ]; then
           echo "✅ mdbook/rpm exists"
           cd mdbook/rpm && mdbook build && cd ../..
+          # Copy documentation directly to rpm root directory
           cp -r mdbook/rpm/book/* packages/rpm/ || echo "Failed to copy rpm documentation"
         else
           echo "❌ mdbook/rpm does not exist"
@@ -234,6 +245,7 @@ jobs:
         if [ -d "mdbook/homebrew" ]; then
           echo "✅ mdbook/homebrew exists"
           cd mdbook/homebrew && mdbook build && cd ../..
+          # Copy documentation directly to homebrew root directory
           cp -r mdbook/homebrew/book/* packages/homebrew/ || echo "Failed to copy homebrew documentation"
         else
           echo "❌ mdbook/homebrew does not exist"
@@ -247,13 +259,17 @@ jobs:
         export VEM_DATE=${VEM_DATE}
         ./scripts/create-repo-metadata.sh
     
-    - name: Generate main index page
+    - name: Generate package redirect pages
       run: |
         export VERSION=${VEM_VERSION}
         export FULL_VERSION=${VEM_FULL_VERSION}
         export VERSION_TAG=${VEM_VERSION_TAG}
         export VEM_DATE=${VEM_DATE}
-        ./scripts/generate-index.sh
+        
+        # Create redirect from root to /base/ directory using script
+        echo "Creating root redirect to /base/"
+        ./scripts/create-root-redirect.sh
+        echo "Root redirect page created"
     
     - name: Verify build output
       run: |
@@ -273,6 +289,7 @@ jobs:
         echo "=== Generated Documentation ==="
         # Check if key files exist
         [ -f "packages/index.html" ] && echo "✅ Main index.html exists" || echo "❌ Main index.html missing"
+        [ -f "packages/base/index.html" ] && echo "✅ Base index.html exists" || echo "❌ Base index.html missing"
         [ -f "packages/deb/index.html" ] && echo "✅ DEB index.html exists" || echo "❌ DEB index.html missing" 
         [ -f "packages/rpm/index.html" ] && echo "✅ RPM index.html exists" || echo "❌ RPM index.html missing"
         [ -f "packages/homebrew/index.html" ] && echo "✅ Homebrew index.html exists" || echo "❌ Homebrew index.html missing"

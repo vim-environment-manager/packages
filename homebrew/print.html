@@ -176,48 +176,54 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="vem-homebrew-tap"><a class="header" href="#vem-homebrew-tap">VEM Homebrew Tap</a></h1>
-<p>Welcome to the VEM (Vim Environment Manager) Homebrew Tap! This tap provides Homebrew formulas for macOS and Linux systems.</p>
-<h2 id="-what-is-a-homebrew-tap"><a class="header" href="#-what-is-a-homebrew-tap">🍺 What is a Homebrew Tap?</a></h2>
-<p>A Homebrew tap is a third-party repository of formulas for Homebrew, the package manager for macOS and Linux. Our tap provides easy installation of VEM on systems that support Homebrew.</p>
-<h2 id="-quick-start"><a class="header" href="#-quick-start">🚀 Quick Start</a></h2>
-<p>To get started with VEM via Homebrew:</p>
-<ol>
-<li>
-<p><strong>Add the tap</strong>:</p>
-<pre><code class="language-bash">brew tap vim-environment-manager/packages
+                        <h1 id="vem-homebrew-installation"><a class="header" href="#vem-homebrew-installation">VEM Homebrew Installation</a></h1>
+<h2 id="-quick-installation"><a class="header" href="#-quick-installation">🚀 Quick Installation</a></h2>
+<p>Add the tap and install VEM:</p>
+<pre><code class="language-bash">brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/homebrew
+brew install vem
 </code></pre>
-</li>
-<li>
-<p><strong>Install VEM</strong>:</p>
-<pre><code class="language-bash">brew install vem
+<h2 id="-one-liner-installation"><a class="header" href="#-one-liner-installation">📦 One-liner Installation</a></h2>
+<pre><code class="language-bash">curl -fsSL https://vim-environment-manager.github.io/packages/install/install-homebrew.sh | bash
 </code></pre>
-</li>
-</ol>
-<p>Or combine both steps:</p>
-<pre><code class="language-bash">brew install vim-environment-manager/packages/vem
+<h2 id="-manual-installation"><a class="header" href="#-manual-installation">💾 Manual Installation</a></h2>
+<p>Download and install manually:</p>
+<pre><code class="language-bash"># Download TAR.GZ
+wget https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-darwin-amd64.tar.gz
+tar -xzf vem-darwin-amd64.tar.gz
+sudo mv vem /usr/local/bin/
+
+# For ARM64 (Apple Silicon)
+wget https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-darwin-arm64.tar.gz
+tar -xzf vem-darwin-arm64.tar.gz
+sudo mv vem /usr/local/bin/
 </code></pre>
-<h2 id="-supported-platforms"><a class="header" href="#-supported-platforms">🎯 Supported Platforms</a></h2>
+<h2 id="-verify-installation"><a class="header" href="#-verify-installation">✅ Verify Installation</a></h2>
+<pre><code class="language-bash">vem --version
+vem --help
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tap-management"><a class="header" href="#tap-management">Tap Management</a></h1>
+<h2 id="-tap-url"><a class="header" href="#-tap-url">🔧 Tap URL</a></h2>
+<pre><code>https://vim-environment-manager.github.io/packages/homebrew
+</code></pre>
+<h2 id="-add-tap"><a class="header" href="#-add-tap">📝 Add Tap</a></h2>
+<pre><code class="language-bash">brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/homebrew
+</code></pre>
+<h2 id="-supported-platforms"><a class="header" href="#-supported-platforms">🏗️ Supported Platforms</a></h2>
 <ul>
-<li><strong>macOS</strong> (Intel and Apple Silicon)</li>
-<li><strong>Linux</strong> (x86_64 and ARM64)</li>
+<li><strong>Architectures</strong>: amd64, arm64 (Apple Silicon)</li>
+<li><strong>OS</strong>: macOS 10.15+</li>
 </ul>
-<h2 id="-tap-information"><a class="header" href="#-tap-information">📋 Tap Information</a></h2>
-<ul>
-<li><strong>Tap Name</strong>: <code>vim-environment-manager/packages</code></li>
-<li><strong>Repository URL</strong>: <code>https://github.com/vim-environment-manager/packages</code></li>
-<li><strong>Formula Location</strong>: <code>Formula/vem.rb</code></li>
-</ul>
-<h2 id="-links"><a class="header" href="#-links">🔗 Links</a></h2>
-<ul>
-<li><a href="https://github.com/ryo-arima/vem">GitHub Repository</a></li>
-<li><a href="https://vim-environment-manager.github.io/packages/">Main Package Repository</a></li>
-<li><a href="https://docs.brew.sh/">Homebrew Documentation</a></li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="formula-details"><a class="header" href="#formula-details">Formula Details</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="development"><a class="header" href="#development">Development</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
+<h2 id="-package-updates"><a class="header" href="#-package-updates">🔄 Package Updates</a></h2>
+<pre><code class="language-bash">brew update
+brew upgrade vem
+</code></pre>
+<h2 id="-formula-information"><a class="header" href="#-formula-information">📋 Formula Information</a></h2>
+<pre><code class="language-bash">brew info vem
+brew list vem
+</code></pre>
+<h2 id="-remove-tap"><a class="header" href="#-remove-tap">🗑️ Remove Tap</a></h2>
+<pre><code class="language-bash">brew untap vim-environment-manager/tap
+</code></pre>
 
                     </main>
 
