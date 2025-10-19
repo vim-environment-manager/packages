@@ -165,8 +165,18 @@ jobs:
     - name: Create RPM repository metadata
       run: |
         cd packages/rpm
-        # Create RPM repository with createrepo
-        createrepo .
+        # Check which createrepo command is available
+        if command -v createrepo_c &> /dev/null; then
+          echo "Using createrepo_c"
+          createrepo_c .
+        elif command -v createrepo &> /dev/null; then
+          echo "Using createrepo"
+          createrepo .
+        else
+          echo "No createrepo command found, trying to install createrepo"
+          sudo apt-get install -y createrepo
+          createrepo .
+        fi
         
         # Create repo file
         cat > vem.repo << EOF
