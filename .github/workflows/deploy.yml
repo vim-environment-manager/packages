@@ -62,6 +62,8 @@ jobs:
         # Install mdbook (check if already installed)
         if ! command -v mdbook &> /dev/null; then
           echo "Installing mdbook..."
+          # Remove any existing mdbook file first
+          rm -f mdbook
           curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.36/mdbook-v0.4.36-x86_64-unknown-linux-gnu.tar.gz | tar xz
           sudo mv mdbook /usr/local/bin/
         else
