@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEM Repository Index</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            padding: 2rem; 
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .repo-card {
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .repo-card:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .repo-card h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .repo-card a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .repo-card a:hover {
+            text-decoration: underline;
+        }
+        .description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 VEM Package Repository</h1>
+        <p>Choose your package management system</p>
+    </div>
+
+    <div class="repo-grid">
+        <div class="repo-card">
+            <h3>🐧 DEB Repository</h3>
+            <p class="description">For Debian, Ubuntu, and derivatives</p>
+            <a href="deb/">Browse DEB packages</a>
+        </div>
+
+        <div class="repo-card">
+            <h3>🎩 RPM Repository</h3>
+            <p class="description">For RHEL, CentOS, Fedora, and derivatives</p>
+            <a href="rpm/">Browse RPM packages</a>
+        </div>
+
+        <div class="repo-card">
+            <h3>🍺 Homebrew Repository</h3>
+            <p class="description">For macOS and Linux with Homebrew</p>
+            <a href="homebrew/">Browse Homebrew packages</a>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
+        <p><a href="../docs/">📖 View Documentation</a> | <a href="https://github.com/ryo-arima/vem">💻 GitHub Repository</a></p>
+    </div>
+</body>
+</html>

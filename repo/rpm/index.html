@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEM RPM Repository</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            padding: 2rem; 
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .install-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        .install-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        pre {
+            background: #343a40;
+            color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        .file-list {
+            margin: 1.5rem 0;
+        }
+        .file-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .file-name {
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .file-size {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎩 VEM RPM Repository</h1>
+        <p>RPM packages for VEM (Vim Environment Manager)</p>
+    </div>
+
+    <div class="install-section">
+        <h3>📥 Installation Instructions</h3>
+        <p>Add the repository and install VEM:</p>
+        <pre>
+# Add repository
+sudo tee /etc/yum.repos.d/vem.repo <<EOF
+[vem]
+name=VEM Repository
+baseurl=https://vim-environment-manager.github.io/packages/repo/rpm
+enabled=1
+gpgcheck=0
+EOF
+
+# Install (choose your package manager)
+sudo dnf install vem       # Fedora, RHEL 8+
+sudo yum install vem       # CentOS 7, RHEL 7
+sudo zypper install vem    # openSUSE
+        </pre>
+    </div>
+
+    <div class="file-list">
+        <h3>📦 Available Packages</h3>
+        <div class="file-item">
+            <span class="file-name"><a href="rpms/">rpms/</a></span>
+            <span class="file-size">RPM package files</span>
+        </div>
+        <div class="file-item">
+            <span class="file-name"><a href="repodata/">repodata/</a></span>
+            <span class="file-size">Repository metadata</span>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
+        <p><a href="../">⬅️ Back to Repository Index</a> | <a href="../../docs/">📖 Documentation</a></p>
+    </div>
+</body>
+</html>
