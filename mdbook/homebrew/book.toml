@@ -5,7 +5,7 @@ src = "src"
 title = "VEM Homebrew Tap"
 
 [build]
-build-dir = "../../homebrew"
+build-dir = "../../docs/homebrew"
 
 [output.html]
-destination = "../../homebrew"
+destination = "../../docs/homebrew"

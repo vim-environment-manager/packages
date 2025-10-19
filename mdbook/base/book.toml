@@ -5,7 +5,7 @@ description = "Vim Environment Manager Package Repository Documentation"
 src = "src"
 
 [build]
-build-dir = "../../base"
+build-dir = "../../docs/base"
 
 [output.html]
 default-theme = "ayu"

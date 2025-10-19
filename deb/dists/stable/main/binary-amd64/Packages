@@ -1,0 +1,14 @@
+Package: vem
+Version: 0.1.0
+Architecture: amd64
+Maintainer: runner <runner@localhost>
+Filename: pool/vem_0.1.0-202510191003_amd64.deb
+Size: 638046
+MD5sum: b0d568af4fb7d2c071a2d47a473c25b7
+SHA1: ff8be69135ad831aef8cec93bd432d49ab9b8e71
+SHA256: 07ed3271f4faed46311527d39be156e9d275478b93a61273cc21fd0ecccce09b
+Section: utils
+Priority: optional
+Description: VEM (Vim Environment Manager)
+ A tool to manage multiple Vim environments.
+

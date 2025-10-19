@@ -5,7 +5,7 @@ src = "src"
 title = "VEM RPM Repository"
 
 [build]
-build-dir = "../../rpm"
+build-dir = "../../docs/rpm"
 
 [output.html]
-destination = "../../rpm"
+destination = "../../docs/rpm"

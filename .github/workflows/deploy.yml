@@ -1,15 +1,10 @@
-# Build and Deploy VEM Package Repository
-name: Build and Deploy Packages
+# Deploy VEM Package Repository to GitHub Pages
+name: Deploy to Pages
 
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
   workflow_dispatch:
-
-env:
-  VEM_SOURCE_URL: "https://github.com/ryo-arima/vem/releases/tag/v0.1.0-20251019"
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -17,14 +12,13 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -34,281 +28,34 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Read versions from file and setup scripts
-      id: version
+    - name: Check for docs directory
       run: |
-        # Make all scripts executable
-        chmod +x scripts/*.sh
-        
-        # Read all versions from VERSION file
-        VERSIONS=$(cat VERSION | grep -v '^$' | tr '\n' ' ')
-        echo "VEM_VERSIONS=${VERSIONS}" >> $GITHUB_ENV
-        
-        # Use the first (latest) version as primary
-        VEM_FULL_VERSION=$(cat VERSION | head -n1 | tr -d '\n')
-        VEM_VERSION=$(echo ${VEM_FULL_VERSION} | cut -d'-' -f1)
-        VEM_DATE=$(echo ${VEM_FULL_VERSION} | cut -d'-' -f2)
-        
-        echo "VEM_VERSION=${VEM_VERSION}" >> $GITHUB_ENV
-        echo "VEM_FULL_VERSION=${VEM_FULL_VERSION}" >> $GITHUB_ENV
-        echo "VEM_VERSION_TAG=v${VEM_FULL_VERSION}" >> $GITHUB_ENV
-        echo "VEM_DATE=${VEM_DATE}" >> $GITHUB_ENV
-        
-        echo "Available Versions: ${VERSIONS}"
-        echo "Primary Version: ${VEM_VERSION}"
-        echo "Primary Full Version: ${VEM_FULL_VERSION}"
-        echo "Primary Tag: v${VEM_FULL_VERSION}"
-        echo "Primary Date: ${VEM_DATE}"
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y rpm alien dpkg-dev reprepro createrepo-c gnupg2
-        
-        # Install mdbook (check if already installed)
-        if ! command -v mdbook &> /dev/null; then
-          echo "Installing mdbook..."
-          # Remove any existing mdbook file or directory first
-          rm -rf mdbook
-          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.36/mdbook-v0.4.36-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          sudo mv mdbook /usr/local/bin/
-        else
-          echo "mdbook is already installed: $(mdbook --version)"
+        if [ ! -d "docs" ]; then
+          echo "❌ docs directory not found!"
+          echo "📝 Please run 'make build' locally and commit the docs/ directory"
+          echo "💡 Use 'make ci-deploy' for complete build and deploy workflow"
+          exit 1
         fi
-    
-    - name: Create directory structure
+        echo "✅ docs directory found"
+        
+    - name: Verify deployment files
       run: |
-        mkdir -p packages/{deb,rpm,homebrew}
-        mkdir -p packages/deb/pool/main/v/vem  
-        mkdir -p packages/deb/dists/stable/main/binary-amd64
-        mkdir -p packages/deb/dists/stable/main/binary-arm64
-    
-    - name: Download VEM packages
-      run: |        
-        echo "Downloading VEM packages for all versions: ${VEM_VERSIONS}"
+        echo "🔍 Verifying deployment files..."
+        [ -f "docs/index.html" ] && echo "✅ Root index.html exists" || { echo "❌ Root index.html missing"; exit 1; }
+        [ -f "docs/base/index.html" ] && echo "✅ Base docs exist" || { echo "❌ Base docs missing"; exit 1; }
+        [ -f "docs/deb/index.html" ] && echo "✅ DEB docs exist" || { echo "❌ DEB docs missing"; exit 1; }
+        [ -f "docs/rpm/index.html" ] && echo "✅ RPM docs exist" || { echo "❌ RPM docs missing"; exit 1; }
+        [ -f "docs/homebrew/index.html" ] && echo "✅ Homebrew docs exist" || { echo "❌ Homebrew docs missing"; exit 1; }
+        echo "🎉 All files verified successfully"
         
-        # Download packages for each version
-        for FULL_VER in ${VEM_VERSIONS}; do
-          VER=$(echo ${FULL_VER} | cut -d'-' -f1)
-          TAG="v${FULL_VER}"
-          
-          echo "Processing version: ${VER} (${FULL_VER})"
-          
-          # Download DEB packages only
-          wget -O packages/deb/pool/main/v/vem/vem_${VER}_amd64.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${VER}_amd64.deb || echo "${VER} amd64 deb not found"
-          wget -O packages/deb/pool/main/v/vem/vem_${VER}_arm64.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${VER}_arm64.deb || echo "${VER} arm64 deb not found"
-          wget -O packages/deb/pool/main/v/vem/vem-linux-x86_64-${FULL_VER}.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.deb || echo "${VER} linux x86_64 deb not found"
-          wget -O packages/deb/pool/main/v/vem/vem-linux-aarch64-${FULL_VER}.deb https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.deb || echo "${VER} linux aarch64 deb not found"
-          
-          # Download RPM packages only  
-          wget -O packages/rpm/vem-${VER}-1.x86_64.rpm https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${VER}-1.x86_64.rpm || echo "${VER} x86_64 rpm not found"
-          wget -O packages/rpm/vem-linux-x86_64-${FULL_VER}.rpm https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.rpm || echo "${VER} linux x86_64 rpm not found"
-        done
-        
-        # Download TAR.GZ archives for Homebrew (latest version only)
-        LATEST_FULL_VER=$(echo ${VEM_VERSIONS} | cut -d' ' -f1)
-        LATEST_VER=$(echo ${LATEST_FULL_VER} | cut -d'-' -f1)
-        LATEST_TAG="v${LATEST_FULL_VER}"
-        
-        echo "Downloading Homebrew archives for latest version: ${LATEST_VER} (${LATEST_FULL_VER})"
-        mkdir -p packages/homebrew/archives
-        
-        # Download TAR.GZ archives for Homebrew
-        wget -O packages/homebrew/archives/vem-${LATEST_VER}-x86_64.tar.gz https://github.com/ryo-arima/vem/releases/download/${LATEST_TAG}/vem-${LATEST_VER}-x86_64.tar.gz || echo "Homebrew x86_64 tar.gz not found"
-        wget -O packages/homebrew/archives/vem-${LATEST_VER}-aarch64.tar.gz https://github.com/ryo-arima/vem/releases/download/${LATEST_TAG}/vem-${LATEST_VER}-aarch64.tar.gz || echo "Homebrew aarch64 tar.gz not found"
-        wget -O packages/homebrew/archives/vem-${LATEST_VER}-arm64.tar.gz https://github.com/ryo-arima/vem/releases/download/${LATEST_TAG}/vem-${LATEST_VER}-arm64.tar.gz || echo "Homebrew arm64 tar.gz not found"
-    
-    - name: Create DEB repository metadata
-      run: |
-        cd packages/deb
-        
-        # Create Packages files for amd64 architecture
-        if ls pool/main/v/vem/*amd64.deb pool/main/v/vem/*x86_64.deb 2>/dev/null; then
-          dpkg-scanpackages pool/main/v/vem /dev/null | grep -A20 -B5 "amd64\|x86_64" | gzip -9c > dists/stable/main/binary-amd64/Packages.gz 2>/dev/null || true
-          gunzip -c dists/stable/main/binary-amd64/Packages.gz > dists/stable/main/binary-amd64/Packages 2>/dev/null || true
-        fi
-        
-        # Create Packages files for arm64 architecture  
-        if ls pool/main/v/vem/*arm64.deb pool/main/v/vem/*aarch64.deb 2>/dev/null; then
-          dpkg-scanpackages pool/main/v/vem /dev/null | grep -A20 -B5 "arm64\|aarch64" | gzip -9c > dists/stable/main/binary-arm64/Packages.gz 2>/dev/null || true
-          gunzip -c dists/stable/main/binary-arm64/Packages.gz > dists/stable/main/binary-arm64/Packages 2>/dev/null || true
-        fi
-        
-        # Create comprehensive Packages file for all architectures
-        dpkg-scanpackages pool/main/v/vem /dev/null > Packages 2>/dev/null || true
-        gzip -c Packages > Packages.gz 2>/dev/null || true
-        
-        # Create Release file
-        cd dists/stable
-        cat > Release << EOF
-        Archive: stable
-        Component: main
-        Origin: VEM Repository
-        Label: VEM
-        Architecture: amd64 arm64
-        Date: $(date -Ru)
-        Description: VEM (Vim Environment Manager) DEB Repository
-        EOF
-        
-        # Add checksums to Release file
-        echo "MD5Sum:" >> Release
-        find . -name "Packages*" -exec md5sum {} \; | sed 's|\./||' | awk '{printf " %s %16d %s\n", $1, $2, $3}' >> Release
-        
-        echo "SHA1:" >> Release  
-        find . -name "Packages*" -exec sha1sum {} \; | sed 's|\./||' | awk '{printf " %s %16d %s\n", $1, $2, $3}' >> Release
-        
-        echo "SHA256:" >> Release
-        find . -name "Packages*" -exec sha256sum {} \; | sed 's|\./||' | awk '{printf " %s %16d %s\n", $1, $2, $3}' >> Release
-    
-    - name: Create RPM repository metadata
-      run: |
-        cd packages/rpm
-        # Check which createrepo command is available
-        if command -v createrepo_c &> /dev/null; then
-          echo "Using createrepo_c"
-          createrepo_c .
-        elif command -v createrepo &> /dev/null; then
-          echo "Using createrepo"
-          createrepo .
-        else
-          echo "No createrepo command found, trying to install createrepo"
-          sudo apt-get install -y createrepo
-          createrepo .
-        fi
-        
-        # Create repo file
-        cat > vem.repo << EOF
-        [vem]
-        name=VEM Repository
-        baseurl=https://vim-environment-manager.github.io/packages/rpm
-        enabled=1
-        gpgcheck=0
-        EOF
-    
-    - name: Generate Homebrew formula and tap
-      run: |
-        mkdir -p packages/homebrew/Formula
-        export VERSION=${VEM_VERSION}
-        export FULL_VERSION=${VEM_FULL_VERSION}
-        export VERSION_TAG=${VEM_VERSION_TAG}
-        export VEM_DATE=${VEM_DATE}
-        ./scripts/generate-homebrew.sh
-    
-    - name: Build mdbook documentation
-      run: |
-        export VERSION=${VEM_VERSION}
-        export FULL_VERSION=${VEM_FULL_VERSION}
-        export VERSION_TAG=${VEM_VERSION_TAG}
-        export VEM_DATE=${VEM_DATE}
-        
-        # Debug: Check current directory and list contents
-        echo "Current directory: $(pwd)"
-        echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
-        echo "Directory contents:"
-        ls -la
-        echo "Looking for mdbook directory:"
-        find . -name "mdbook" -type d
-        
-        # Check if mdbook directories exist and build documentation
-        if [ -d "mdbook/base" ]; then
-          echo "✅ mdbook/base exists"
-          cd mdbook/base && mdbook build && cd ../..
-          # Base documentation is already built to packages/base/ via book.toml configuration
-          echo "Base documentation built to packages/base/"
-        else
-          echo "❌ mdbook/base does not exist"
-        fi
-        
-        if [ -d "mdbook/deb" ]; then
-          echo "✅ mdbook/deb exists"
-          cd mdbook/deb && mdbook build && cd ../..
-          # Copy documentation directly to deb root directory
-          cp -r mdbook/deb/book/* packages/deb/ || echo "Failed to copy deb documentation"
-        else
-          echo "❌ mdbook/deb does not exist"
-        fi
-        
-        if [ -d "mdbook/rpm" ]; then
-          echo "✅ mdbook/rpm exists"
-          cd mdbook/rpm && mdbook build && cd ../..
-          # Copy documentation directly to rpm root directory
-          cp -r mdbook/rpm/book/* packages/rpm/ || echo "Failed to copy rpm documentation"
-        else
-          echo "❌ mdbook/rpm does not exist"
-        fi
-        
-        if [ -d "mdbook/homebrew" ]; then
-          echo "✅ mdbook/homebrew exists"
-          cd mdbook/homebrew && mdbook build && cd ../..
-          # Copy documentation directly to homebrew root directory
-          cp -r mdbook/homebrew/book/* packages/homebrew/ || echo "Failed to copy homebrew documentation"
-        else
-          echo "❌ mdbook/homebrew does not exist"
-        fi
-    
-    - name: Create repository metadata and installation scripts
-      run: |
-        export VERSION=${VEM_VERSION}
-        export FULL_VERSION=${VEM_FULL_VERSION}
-        export VERSION_TAG=${VEM_VERSION_TAG}
-        export VEM_DATE=${VEM_DATE}
-        ./scripts/create-repo-metadata.sh
-    
-    - name: Generate package redirect pages
-      run: |
-        export VERSION=${VEM_VERSION}
-        export FULL_VERSION=${VEM_FULL_VERSION}
-        export VERSION_TAG=${VEM_VERSION_TAG}
-        export VEM_DATE=${VEM_DATE}
-        
-        # Create redirect from root to /base/ directory using script
-        echo "Creating root redirect to /base/"
-        ./scripts/create-root-redirect.sh
-        echo "Root redirect page created"
-    
-    - name: Verify build output
-      run: |
-        echo "Build completed successfully!"
-        echo "=== Package Structure ==="
-        ls -la packages/
-        
-        echo "=== DEB Packages ==="
-        ls -la packages/deb/pool/main/v/vem/ || echo "No DEB packages found"
-        
-        echo "=== RPM Packages ==="
-        ls -la packages/rpm/*.rpm || echo "No RPM packages found"
-        
-        echo "=== Homebrew Archive Packages ==="
-        ls -la packages/homebrew/archives/ || echo "No Homebrew archive packages found"
-        
-        echo "=== Generated Documentation ==="
-        # Check if key files exist
-        [ -f "packages/index.html" ] && echo "✅ Main index.html exists" || echo "❌ Main index.html missing"
-        [ -f "packages/base/index.html" ] && echo "✅ Base index.html exists" || echo "❌ Base index.html missing"
-        [ -f "packages/deb/index.html" ] && echo "✅ DEB index.html exists" || echo "❌ DEB index.html missing" 
-        [ -f "packages/rpm/index.html" ] && echo "✅ RPM index.html exists" || echo "❌ RPM index.html missing"
-        [ -f "packages/homebrew/index.html" ] && echo "✅ Homebrew index.html exists" || echo "❌ Homebrew index.html missing"
-        
-        echo "=== Repository Metadata ==="
-        [ -f "packages/deb/Packages" ] && echo "✅ DEB Packages file exists" || echo "❌ DEB Packages file missing"
-        [ -d "packages/rpm/repodata" ] && echo "✅ RPM repodata exists" || echo "❌ RPM repodata missing"
-    
     - name: Setup Pages
       uses: actions/configure-pages@v5
-      if: github.ref == 'refs/heads/main'
       
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
-      if: github.ref == 'refs/heads/main'
       with:
-        path: './packages'
+        path: './docs'
         
     - name: Deploy to GitHub Pages
       id: deployment
-      if: github.ref == 'refs/heads/main'
       uses: actions/deploy-pages@v4

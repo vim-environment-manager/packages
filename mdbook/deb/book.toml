@@ -5,7 +5,7 @@ src = "src"
 title = "VEM DEB Repository"
 
 [build]
-build-dir = "../../deb"
+build-dir = "../../docs/deb"
 
 [output.html]
-destination = "../../deb"
+destination = "../../docs/deb"

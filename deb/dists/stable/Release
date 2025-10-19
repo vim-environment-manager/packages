@@ -1,0 +1,8 @@
+Origin: VEM Repository
+Label: VEM
+Suite: stable
+Codename: stable
+Architectures: amd64 arm64
+Components: main
+Description: Vim Environment Manager Package Repository
+Date: $(date -u +"%a, %d %b %Y %H:%M:%S UTC")

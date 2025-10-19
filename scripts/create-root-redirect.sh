@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-# Create root redirect page to /base/
-cat > index.html << 'EOF'
+# Create root redirect page to /base/ in docs directory
+mkdir -p docs
+cat > docs/index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
