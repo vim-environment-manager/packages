@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEM Homebrew Repository</title>
+    <title>VEM RPM Repository</title>
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
@@ -61,56 +61,40 @@
 </head>
 <body>
     <div class="header">
-        <h1>🍺 VEM Homebrew Repository</h1>
-        <p>Homebrew tap for VEM (Vim Environment Manager)</p>
+        <h1>🎩 VEM RPM Repository</h1>
+        <p>RPM packages for VEM (Vim Environment Manager)</p>
     </div>
 
     <div class="install-section">
         <h3>📥 Installation Instructions</h3>
-        <p>Add the tap and install VEM:</p>
+        <p>Add the repository and install VEM:</p>
         <pre>
-# Add tap
-brew tap vim-environment-manager/tap
+# Add repository
+sudo tee /etc/yum.repos.d/vem.repo <<EOF
+[vem]
+name=VEM Repository
+baseurl=https://vim-environment-manager.github.io/packages/repo/rpm
+enabled=1
+gpgcheck=0
+EOF
 
-# Install VEM
-brew install vem
-        </pre>
-        
-        <h3>💾 Manual Installation</h3>
-        <p>If the tap doesn't work, install directly from the formula:</p>
-        <pre>
-brew install https://vim-environment-manager.github.io/packages/repo/homebrew/Formula/vem.rb
+# Install (choose your package manager)
+sudo dnf install vem       # Fedora, RHEL 8+
+sudo yum install vem       # CentOS 7, RHEL 7
+sudo zypper install vem    # openSUSE
         </pre>
     </div>
 
     <div class="file-list">
-        <h3>📦 Repository Contents</h3>
+        <h3>📦 Available Packages</h3>
         <div class="file-item">
-            <span class="file-name"><a href="Formula/">Formula/</a></span>
-            <span class="file-size">Homebrew formulae</span>
+            <span class="file-name"><a href="rpms/">rpms/</a></span>
+            <span class="file-size">RPM package files</span>
         </div>
         <div class="file-item">
-            <span class="file-name"><a href="README.md">README.md</a></span>
-            <span class="file-size">Documentation</span>
+            <span class="file-name"><a href="repodata/">repodata/</a></span>
+            <span class="file-size">Repository metadata</span>
         </div>
-    </div>
-
-    <div class="install-section">
-        <h3>🔧 Troubleshooting</h3>
-        <p><strong>Command not found after installation?</strong></p>
-        <p>Make sure Homebrew's bin directory is in your PATH:</p>
-        
-        <h4>For Apple Silicon Macs:</h4>
-        <pre>
-echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-        </pre>
-        
-        <h4>For Intel Macs:</h4>
-        <pre>
-echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-        </pre>
     </div>
 
     <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">

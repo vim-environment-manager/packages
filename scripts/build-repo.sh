@@ -26,35 +26,37 @@ echo "🏷️  Latest: ${VEM_FULL_VERSION}"
 
 # Create directory structure
 echo "📁 Creating directory structure..."
-mkdir -p "$REPO_ROOT/repo"/{deb,rpm,homebrew}
+mkdir -p "$REPO_ROOT/repo"/{deb,rpm}
 mkdir -p "$REPO_ROOT/repo/deb/pool/main/v/vem"
 mkdir -p "$REPO_ROOT/repo/deb/dists/stable/main/binary-amd64"
 mkdir -p "$REPO_ROOT/repo/deb/dists/stable/main/binary-arm64"
 mkdir -p "$REPO_ROOT/repo/rpm/repodata"
-mkdir -p "$REPO_ROOT/repo/homebrew/Formula"
+
+# Backup index.html files (excluding docs and homebrew)
+echo "💾 Backing up index.html files..."
+mkdir -p "$REPO_ROOT/backups/index-files"
+find "$REPO_ROOT" -name "index.html" -not -path "$REPO_ROOT/docs/*" -not -path "$REPO_ROOT/backups/*" -not -path "$REPO_ROOT/tmp/*" -not -path "$REPO_ROOT/repo/homebrew/*" | while read file; do
+    backup_path="$REPO_ROOT/backups/index-files${file#$REPO_ROOT}"
+    mkdir -p "$(dirname "$backup_path")"
+    cp "$file" "$backup_path" 2>/dev/null || true
+done
+echo "✅ Index files backed up"
 
 # Clean mdbook files from package repositories (remove only common static site artifacts)
 echo "🧹 Cleaning mdbook files from package repositories..."
-for repo_dir in deb rpm homebrew; do
+for repo_dir in deb rpm; do
     DIR="$REPO_ROOT/repo/$repo_dir"
     if [ -d "$DIR" ]; then
         # remove site files that may have been copied accidentally
         rm -f "$DIR"/.nojekyll 2>/dev/null || true
         rm -f "$DIR"/404.html 2>/dev/null || true
-        # Don't remove index.html as it contains redirect to /repo
+        # Don't remove index.html as it will be restored from backup
         # rm -f "$DIR"/index.html 2>/dev/null || true
         rm -f "$DIR"/book.js 2>/dev/null || true
         rm -rf "$DIR"/css 2>/dev/null || true
         rm -rf "$DIR"/js 2>/dev/null || true
         rm -rf "$DIR"/fonts 2>/dev/null || true
         rm -rf "$DIR"/search_index.json 2>/dev/null || true
-        # also remove any deep nested index files accidentally placed (but preserve top-level index.html)
-        find "$DIR" -mindepth 2 -type f -name "index.html" -exec rm -f {} + 2>/dev/null || true
-        
-        # For homebrew directory, preserve .git directory for tap functionality
-        if [ "$repo_dir" = "homebrew" ]; then
-            echo "  📝 Preserving .git directory for homebrew tap"
-        fi
         
         echo "  ✅ Cleaned $repo_dir directory"
     fi
@@ -64,8 +66,6 @@ done
 echo "🧹 Cleaning existing packages..."
 rm -rf "$REPO_ROOT/repo/deb/pool"/*.deb 2>/dev/null || true  
 rm -rf "$REPO_ROOT/repo/rpm/rpms"/*.rpm 2>/dev/null || true
-rm -rf "$REPO_ROOT/repo/homebrew/archives"/*.tar.gz 2>/dev/null || true
-rm -rf "$REPO_ROOT/repo/homebrew/archives"/*.zip 2>/dev/null || true
 echo "✅ Existing packages cleaned"
 
 # Download packages for each version (based on VERSION file)
@@ -81,26 +81,18 @@ for FULL_VER in ${VERSIONS}; do
     echo "  📥 Downloading DEB packages..."
     wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.deb" && echo "  ✅ Downloaded vem-linux-x86_64.deb" || echo "  ⚠️  Failed to download vem-linux-x86_64.deb"
     wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.deb" && echo "  ✅ Downloaded vem-linux-aarch64.deb" || echo "  ⚠️  Failed to download vem-linux-aarch64.deb"
+    # Download versioned DEB packages
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${FULL_VER}_amd64.deb" && echo "  ✅ Downloaded vem_${FULL_VER}_amd64.deb" || echo "  ⚠️  Failed to download vem_${FULL_VER}_amd64.deb"
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${FULL_VER}_arm64.deb" && echo "  ✅ Downloaded vem_${FULL_VER}_arm64.deb" || echo "  ⚠️  Failed to download vem_${FULL_VER}_arm64.deb"
     
     # Download RPM packages (using available format)
     echo "  📥 Downloading RPM packages..."
     wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.rpm" && echo "  ✅ Downloaded vem-linux-x86_64.rpm" || echo "  ⚠️  Failed to download vem-linux-x86_64.rpm"
+    # Download versioned RPM packages
+    wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}.x86_64.rpm" && echo "  ✅ Downloaded vem-${FULL_VER}.x86_64.rpm" || echo "  ⚠️  Failed to download vem-${FULL_VER}.x86_64.rpm"
     # ARM64 RPM not available in current release
     # wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.rpm" && echo "  ✅ Downloaded vem-linux-aarch64.rpm" || echo "  ⚠️  Failed to download vem-linux-aarch64.rpm"
-    
-    # Download tar.gz files for Homebrew
-    echo "  📥 Downloading Homebrew archives..."
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-x86_64.tar.gz" && echo "  ✅ Downloaded vem-${FULL_VER}-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-${FULL_VER}-x86_64.tar.gz"
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-aarch64.tar.gz" && echo "  ✅ Downloaded vem-${FULL_VER}-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-${FULL_VER}-aarch64.tar.gz"
-    # Also download generic linux tar.gz files
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.tar.gz" && echo "  ✅ Downloaded vem-linux-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-x86_64.tar.gz"
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.tar.gz" && echo "  ✅ Downloaded vem-linux-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-aarch64.tar.gz"
-    
-    # Download zip files for generic use (using available formats)
-    echo "  📥 Downloading ZIP archives..."
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-x86_64.zip" && echo "  ✅ Downloaded vem-${FULL_VER}-x86_64.zip" || echo "  ⚠️  Failed to download vem-${FULL_VER}-x86_64.zip"
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.zip" && echo "  ✅ Downloaded vem-linux-x86_64.zip" || echo "  ⚠️  Failed to download vem-linux-x86_64.zip"
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.zip" && echo "  ✅ Downloaded vem-linux-aarch64.zip" || echo "  ⚠️  Failed to download vem-linux-aarch64.zip"
+
 done
 
 # Create DEB repository metadata
@@ -219,139 +211,9 @@ else
     echo "⚠️  Neither Docker nor createrepo found, skipping RPM metadata"
 fi
 
-# Create Homebrew Formula
-echo "🍺 Creating Homebrew Formula..."
-mkdir -p "$REPO_ROOT/repo/homebrew/Formula"
-
-# Calculate SHA256 for downloaded files
-ARM64_SHA=""
-X86_64_SHA=""
-
-if [ -f "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz" ]; then
-    ARM64_SHA=$(shasum -a 256 "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz" | cut -d' ' -f1)
-fi
-
-if [ -f "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz" ]; then
-    X86_64_SHA=$(shasum -a 256 "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz" | cut -d' ' -f1)
-fi
-
-cat > "$REPO_ROOT/repo/homebrew/Formula/vem.rb" << EOF
-class Vem < Formula
-  desc "Vim Environment Manager"
-  homepage "https://github.com/ryo-arima/vem"
-  version "${VEM_VERSION}"
-  
-  if Hardware::CPU.arm?
-    url "https://vim-environment-manager.github.io/packages/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz"
-    sha256 "${ARM64_SHA:-PLACEHOLDER_ARM64_SHA}"
-  else
-    url "https://vim-environment-manager.github.io/packages/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz"
-    sha256 "${X86_64_SHA:-PLACEHOLDER_X86_64_SHA}"
-  end
-
-  def install
-    bin.install "vem"
-  end
-
-  test do
-    system "#{bin}/vem", "--version"
-  end
-end
-EOF
-echo "✅ Homebrew Formula created"
-
-# Create archives directory
-mkdir -p "$REPO_ROOT/repo/homebrew/archives"
-
-# Create README.md for Homebrew tap
-cat > "$REPO_ROOT/repo/homebrew/README.md" << 'README_EOF'
-# VEM Homebrew Tap
-
-This is the official Homebrew tap for VEM (Vim Environment Manager).
-
-## Installation
-
-Add the tap and install VEM:
-
-```bash
-brew tap vim-environment-manager/tap https://github.com/vim-environment-manager/packages.git --subdirectory=repo/homebrew
-brew install vem
-```
-
-## About VEM
-
-VEM (Vim Environment Manager) is a tool for managing Vim environments.
-
-- **Homepage**: https://github.com/ryo-arima/vem
-- **Documentation**: https://vim-environment-manager.github.io/packages/docs/
-
-## Support
-
-For issues and support, please visit the [VEM repository](https://github.com/ryo-arima/vem/issues).
-README_EOF
-
-
-
-# Add and commit files
-echo "✅ Homebrew Formula ready for Git repository tap"
-
-# Optional: Setup separate tap repository
-# This creates a structure that can be pushed to vim-environment-manager/homebrew
-echo "📝 Creating separate tap repository structure..."
-TAP_DIR="$REPO_ROOT/repo/homebrew"
-rm -rf "$TAP_DIR" 2>/dev/null || true
-mkdir -p "$TAP_DIR"
-
-# Copy necessary files for standalone tap
-cp -r "$REPO_ROOT/repo/homebrew/Formula" "$TAP_DIR/"
-cp "$REPO_ROOT/repo/homebrew/README.md" "$TAP_DIR/"
-
-# Create a simple script to push to separate tap repo
-cat > "$TAP_DIR/push-to-tap.sh" << 'TAP_PUSH_EOF'
-#!/bin/bash
-# Script to push this directory to vim-environment-manager/homebrew repository
-set -e
-
-echo "🚀 Pushing to Homebrew tap repository..."
-
-# Initialize git if not already done
-if [ ! -d ".git" ]; then
-    git init
-    git branch -M main
-fi
-
-# Configure git
-git config user.name "VEM Package Bot" || true
-git config user.email "packages@vim-environment-manager.github.io" || true
-
-# Add files
-git add .
-git commit -m "Update VEM Homebrew Formula" || echo "No changes to commit"
-
-# Add remote if not exists
-if ! git remote get-url origin >/dev/null 2>&1; then
-    echo "Please add the remote repository:"
-    echo "git remote add origin https://github.com/vim-environment-manager/homebrew.git"
-    echo "Then run: git push -u origin main"
-else
-    git push origin main
-fi
-
-echo "✅ Tap repository updated"
-echo "🍺 Users can now run: brew tap vim-environment-manager/tap"
-TAP_PUSH_EOF
-
-chmod +x "$TAP_DIR/push-to-tap.sh"
-
-echo "✅ Standalone tap repository created at $TAP_DIR"
-echo "💡 To set up the tap repository:"
-echo "   1. Create https://github.com/vim-environment-manager/homebrew"
-echo "   2. cd $TAP_DIR && ./push-to-tap.sh"
-echo "   3. Users can then run: brew tap vim-environment-manager/tap"
-
-# Create installation scripts for docs directory
-echo "📜 Creating installation scripts..."
-mkdir -p "$DOCS_DIR/install"
+# Generate documentation
+echo "📚 Generating documentation..."
+# The documentation generation will be handled separately
 
 # DEB installation script
 cat > "$DOCS_DIR/install/install-deb.sh" << 'EOF'
@@ -404,26 +266,6 @@ fi
 echo "✅ VEM installed successfully!"
 echo "📖 Usage: vem --help"
 RPMEOFMARKER
-
-# Homebrew installation script
-cat > "$DOCS_DIR/install/install-homebrew.sh" << 'EOF'
-#!/bin/bash
-set -e
-
-echo "🍺 Installing VEM via Homebrew..."
-
-# Try tap installation first
-if brew tap vim-environment-manager/tap 2>/dev/null; then
-    echo "✅ Tap added successfully"
-    brew install vem
-else
-    echo "⚠️  Tap not available, installing directly from Formula URL..."
-    brew install https://vim-environment-manager.github.io/packages/repo/homebrew/Formula/vem.rb
-fi
-
-echo "✅ VEM installed successfully!"
-echo "📖 Usage: vem --help"
-EOF
 
 # Make scripts executable
 chmod +x "$DOCS_DIR/install"/*.sh
@@ -553,121 +395,38 @@ if [ -d "$REPO_ROOT/repo/deb/dists/stable" ]; then
     create_directory_index "$REPO_ROOT/repo/deb/dists/stable" "Stable Distribution" "../" "Stable distribution metadata"
 fi
 
-# Create directory indexes for Homebrew repository
-create_directory_index "$REPO_ROOT/repo/homebrew/Formula" "Homebrew Formulas" "../" "Homebrew formula files"
-create_directory_index "$REPO_ROOT/repo/homebrew/archives" "Source Archives" "../" "Source archive files for Homebrew"
-
-
-
 echo "✅ Directory index files created"
 
-
-
-# Create standalone Homebrew tap repository
-echo "� Creating standalone Homebrew tap repository..."
-TAP_REPO_DIR="$REPO_ROOT/repo/homebrew"
-rm -rf "$TAP_REPO_DIR" 2>/dev/null || true
-mkdir -p "$TAP_REPO_DIR"
-
-# Copy Formula and README
-cp -r "$REPO_ROOT/repo/homebrew/Formula" "$TAP_REPO_DIR/"
-cp "$REPO_ROOT/repo/homebrew/README.md" "$TAP_REPO_DIR/"
-
-# Update README for standalone tap
-cat > "$TAP_REPO_DIR/README.md" << 'README_EOF'
-# VEM Homebrew Tap
-
-This is the official Homebrew tap for VEM (Vim Environment Manager).
-
-## Installation
-
-Add the tap and install VEM:
-
-```bash
-brew tap vim-environment-manager/tap
-brew install vem
-```
-
-## About VEM
-
-VEM (Vim Environment Manager) is a tool for managing Vim environments.
-
-- **Homepage**: https://github.com/ryo-arima/vem
-- **Documentation**: https://vim-environment-manager.github.io/packages/docs/
-
-## Support
-
-For issues and support, please visit the [VEM repository](https://github.com/ryo-arima/vem/issues).
-README_EOF
-
-# Create deployment script for the tap repository
-cat > "$TAP_REPO_DIR/deploy.sh" << 'DEPLOY_EOF'
-#!/bin/bash
-set -e
-
-echo "🚀 Deploying to homebrew repository..."
-
-# Check if we're in the right directory
-if [ ! -d "Formula" ]; then
-    echo "❌ Formula directory not found. Run this from the homebrew directory."
-    exit 1
-fi
-
-# Initialize or update git repository
-if [ ! -d ".git" ]; then
-    git init
-    git branch -M main
-    echo "📝 Git repository initialized"
+# Restore index.html files from backup (excluding homebrew)
+echo "🔄 Restoring index.html files..."
+if [ -d "$REPO_ROOT/backups/index-files" ]; then
+    find "$REPO_ROOT/backups/index-files" -name "index.html" | while read backup_file; do
+        original_path="$REPO_ROOT${backup_file#$REPO_ROOT/backups/index-files}"
+        # Skip homebrew paths since homebrew is managed separately
+        if [[ "$original_path" == *"/repo/homebrew/"* ]]; then
+            continue
+        fi
+        if [ -f "$backup_file" ]; then
+            mkdir -p "$(dirname "$original_path")"
+            cp "$backup_file" "$original_path"
+            echo "  ✅ Restored: $original_path"
+        fi
+    done
+    echo "✅ Index files restored from backup"
 else
-    echo "📝 Using existing git repository"
+    echo "⚠️  No backup directory found, skipping restore"
 fi
 
-# Configure git user
-git config user.name "VEM Package Bot" || true
-git config user.email "packages@vim-environment-manager.github.io" || true
-
-# Add all files
-git add .
-
-# Commit changes
-if git diff --cached --quiet; then
-    echo "📝 No changes to commit"
-else
-    git commit -m "Update VEM Homebrew Formula v${VEM_VERSION} (${VEM_FULL_VERSION})"
-    echo "✅ Changes committed"
 fi
 
-# Check for remote
-if ! git remote get-url origin >/dev/null 2>&1; then
-    echo ""
-    echo "🔧 Setup required:"
-    echo "1. Create repository: https://github.com/vim-environment-manager/homebrew"
-    echo "2. Add remote: git remote add origin https://github.com/vim-environment-manager/homebrew.git"
-    echo "3. Push: git push -u origin main"
-    echo ""
-    echo "After setup, users can install with:"
-    echo "  brew tap vim-environment-manager/tap"
-    echo "  brew install vem"
-else
-    echo "🚀 Pushing to remote repository..."
-    git push origin main
-    echo "✅ Successfully pushed to homebrew repository"
-    echo ""
-    echo "Users can now install with:"
-    echo "  brew tap vim-environment-manager/tap"
-    echo "  brew install vem"
-fi
-DEPLOY_EOF
-
-chmod +x "$TAP_REPO_DIR/deploy.sh"
-
-echo "✅ Standalone Homebrew tap created at: $TAP_REPO_DIR"
+echo ""
+echo "🎉 Package repository build complete!"
+echo "📁 Repository structure:"
+echo "  📦 DEB packages: repo/deb/"
+echo "  📦 RPM packages: repo/rpm/"
+echo "  📚 Documentation: docs/"
 
 echo "🎉 Package repositories built successfully!"
-echo "📂 Package directories: $REPO_ROOT/repo/{deb,rpm,homebrew}"
+echo "📂 Package directories: $REPO_ROOT/repo/{deb,rpm}"
 echo "📂 Docs directory: $DOCS_DIR"
-echo "📂 Homebrew tap: $TAP_REPO_DIR"
 echo "🌐 Ready for deployment to GitHub Pages"
-echo ""
-echo "🍺 To setup Homebrew tap:"
-echo "   cd $TAP_REPO_DIR && ./deploy.sh"
