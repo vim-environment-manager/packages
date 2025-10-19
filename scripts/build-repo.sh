@@ -296,9 +296,9 @@ README_EOF
 echo "✅ Homebrew Formula ready for Git repository tap"
 
 # Optional: Setup separate tap repository
-# This creates a structure that can be pushed to vim-environment-manager/homebrew-tap
+# This creates a structure that can be pushed to vim-environment-manager/homebrew
 echo "📝 Creating separate tap repository structure..."
-TAP_DIR="$REPO_ROOT/homebrew-tap-repo"
+TAP_DIR="$REPO_ROOT/repo/homebrew"
 rm -rf "$TAP_DIR" 2>/dev/null || true
 mkdir -p "$TAP_DIR"
 
@@ -309,7 +309,7 @@ cp "$REPO_ROOT/repo/homebrew/README.md" "$TAP_DIR/"
 # Create a simple script to push to separate tap repo
 cat > "$TAP_DIR/push-to-tap.sh" << 'TAP_PUSH_EOF'
 #!/bin/bash
-# Script to push this directory to vim-environment-manager/homebrew-tap repository
+# Script to push this directory to vim-environment-manager/homebrew repository
 set -e
 
 echo "🚀 Pushing to Homebrew tap repository..."
@@ -331,7 +331,7 @@ git commit -m "Update VEM Homebrew Formula" || echo "No changes to commit"
 # Add remote if not exists
 if ! git remote get-url origin >/dev/null 2>&1; then
     echo "Please add the remote repository:"
-    echo "git remote add origin https://github.com/vim-environment-manager/homebrew-tap.git"
+    echo "git remote add origin https://github.com/vim-environment-manager/homebrew.git"
     echo "Then run: git push -u origin main"
 else
     git push origin main
@@ -345,7 +345,7 @@ chmod +x "$TAP_DIR/push-to-tap.sh"
 
 echo "✅ Standalone tap repository created at $TAP_DIR"
 echo "💡 To set up the tap repository:"
-echo "   1. Create https://github.com/vim-environment-manager/homebrew-tap"
+echo "   1. Create https://github.com/vim-environment-manager/homebrew"
 echo "   2. cd $TAP_DIR && ./push-to-tap.sh"
 echo "   3. Users can then run: brew tap vim-environment-manager/tap"
 
@@ -565,7 +565,7 @@ echo "✅ Directory index files created"
 
 # Create standalone Homebrew tap repository
 echo "� Creating standalone Homebrew tap repository..."
-TAP_REPO_DIR="$REPO_ROOT/homebrew-tap"
+TAP_REPO_DIR="$REPO_ROOT/repo/homebrew"
 rm -rf "$TAP_REPO_DIR" 2>/dev/null || true
 mkdir -p "$TAP_REPO_DIR"
 
@@ -605,11 +605,11 @@ cat > "$TAP_REPO_DIR/deploy.sh" << 'DEPLOY_EOF'
 #!/bin/bash
 set -e
 
-echo "🚀 Deploying to homebrew-tap repository..."
+echo "🚀 Deploying to homebrew repository..."
 
 # Check if we're in the right directory
 if [ ! -d "Formula" ]; then
-    echo "❌ Formula directory not found. Run this from the homebrew-tap directory."
+    echo "❌ Formula directory not found. Run this from the homebrew directory."
     exit 1
 fi
 
@@ -641,8 +641,8 @@ fi
 if ! git remote get-url origin >/dev/null 2>&1; then
     echo ""
     echo "🔧 Setup required:"
-    echo "1. Create repository: https://github.com/vim-environment-manager/homebrew-tap"
-    echo "2. Add remote: git remote add origin https://github.com/vim-environment-manager/homebrew-tap.git"
+    echo "1. Create repository: https://github.com/vim-environment-manager/homebrew"
+    echo "2. Add remote: git remote add origin https://github.com/vim-environment-manager/homebrew.git"
     echo "3. Push: git push -u origin main"
     echo ""
     echo "After setup, users can install with:"
@@ -651,7 +651,7 @@ if ! git remote get-url origin >/dev/null 2>&1; then
 else
     echo "🚀 Pushing to remote repository..."
     git push origin main
-    echo "✅ Successfully pushed to homebrew-tap repository"
+    echo "✅ Successfully pushed to homebrew repository"
     echo ""
     echo "Users can now install with:"
     echo "  brew tap vim-environment-manager/tap"
