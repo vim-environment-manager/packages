@@ -207,13 +207,18 @@ jobs:
         export VEM_DATE=${VEM_DATE}
         
         # Build DEB documentation
-        cd mdbook/deb && mdbook build && cd ../..
+        cd "${GITHUB_WORKSPACE}/mdbook/deb" && mdbook build && cd "${GITHUB_WORKSPACE}"
         
         # Build RPM documentation  
-        cd mdbook/rpm && mdbook build && cd ../..
+        cd "${GITHUB_WORKSPACE}/mdbook/rpm" && mdbook build && cd "${GITHUB_WORKSPACE}"
         
         # Build Homebrew documentation
-        cd mdbook/homebrew && mdbook build && cd ../..
+        cd "${GITHUB_WORKSPACE}/mdbook/homebrew" && mdbook build && cd "${GITHUB_WORKSPACE}"
+        
+        # Copy built documentation to packages directories
+        cp -r mdbook/deb/book/* packages/deb/
+        cp -r mdbook/rpm/book/* packages/rpm/
+        cp -r mdbook/homebrew/book/* packages/homebrew/
     
     - name: Create repository metadata and installation scripts
       run: |
