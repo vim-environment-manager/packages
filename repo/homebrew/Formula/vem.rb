@@ -57,12 +57,22 @@ class Vem < Formula
       VEM has been installed to:
         #{bin}/vem
 
-      To use VEM, make sure Homebrew's bin directory is in your PATH:
+      To use VEM, make sure Homebrew's bin directory is in your PATH.
+      
+      For Apple Silicon Macs:
         echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
         source ~/.zshrc
 
-      Or for bash users:
+      For Intel Macs:
+        echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+        source ~/.zshrc
+
+      Or for bash users (Apple Silicon):
         echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.bash_profile
+        source ~/.bash_profile
+
+      Or for bash users (Intel):
+        echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bash_profile
         source ~/.bash_profile
 
       Test your installation:
