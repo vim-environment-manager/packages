@@ -60,8 +60,16 @@ for repo_dir in deb rpm homebrew; do
     fi
 done
 
-# Download packages for each version (force download of actual packages)
-echo "📦 Downloading packages..."
+# Clean all existing packages first
+echo "🧹 Cleaning existing packages..."
+rm -rf "$REPO_ROOT/repo/deb/pool"/*.deb 2>/dev/null || true  
+rm -rf "$REPO_ROOT/repo/rpm/rpms"/*.rpm 2>/dev/null || true
+rm -rf "$REPO_ROOT/repo/homebrew/archives"/*.tar.gz 2>/dev/null || true
+rm -rf "$REPO_ROOT/repo/homebrew/archives"/*.zip 2>/dev/null || true
+echo "✅ Existing packages cleaned"
+
+# Download packages for each version (based on VERSION file)
+echo "📦 Downloading packages for all versions in VERSION file..."
 for FULL_VER in ${VERSIONS}; do
     VER=$(echo ${FULL_VER} | cut -d'-' -f1)
     DATE_PART=$(echo ${FULL_VER} | cut -d'-' -f2)
@@ -69,36 +77,31 @@ for FULL_VER in ${VERSIONS}; do
     
     echo "🔽 Processing version: ${VER} (${FULL_VER})"
     
-    # Remove existing placeholder files first
-    rm -f "$REPO_ROOT/repo/deb/pool/vem_${FULL_VER}_*.deb" 2>/dev/null || true
-    rm -f "$REPO_ROOT/repo/rpm/rpms/vem-${FULL_VER}.x86_64.rpm" 2>/dev/null || true
-    rm -f "$REPO_ROOT/repo/homebrew/archives/vem-${FULL_VER}-*" 2>/dev/null || true
-    
-    # Download DEB packages (actual files found in GitHub releases)
+    # Download DEB packages (based on VERSION file)
     echo "  📥 Downloading DEB packages..."
-    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_0.1.0-202510191003_amd64.deb" && echo "  ✅ Downloaded vem_0.1.0-202510191003_amd64.deb" || echo "  ⚠️  Failed to download vem_0.1.0-202510191003_amd64.deb"
-    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_0.1.0-202510191003_arm64.deb" && echo "  ✅ Downloaded vem_0.1.0-202510191003_arm64.deb" || echo "  ⚠️  Failed to download vem_0.1.0-202510191003_arm64.deb"
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${FULL_VER}_amd64.deb" && echo "  ✅ Downloaded vem_${FULL_VER}_amd64.deb" || echo "  ⚠️  Failed to download vem_${FULL_VER}_amd64.deb"
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_${FULL_VER}_arm64.deb" && echo "  ✅ Downloaded vem_${FULL_VER}_arm64.deb" || echo "  ⚠️  Failed to download vem_${FULL_VER}_arm64.deb"
     # Also download linux generic deb files
     wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.deb" && echo "  ✅ Downloaded vem-linux-x86_64.deb" || echo "  ⚠️  Failed to download vem-linux-x86_64.deb"
     wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.deb" && echo "  ✅ Downloaded vem-linux-aarch64.deb" || echo "  ⚠️  Failed to download vem-linux-aarch64.deb"
     
     # Download RPM packages
     echo "  📥 Downloading RPM packages..."
-    wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003.x86_64.rpm" && echo "  ✅ Downloaded vem-0.1.0-202510191003.x86_64.rpm" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003.x86_64.rpm"
+    wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}.x86_64.rpm" && echo "  ✅ Downloaded vem-${FULL_VER}.x86_64.rpm" || echo "  ⚠️  Failed to download vem-${FULL_VER}.x86_64.rpm"
     wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.rpm" && echo "  ✅ Downloaded vem-linux-x86_64.rpm" || echo "  ⚠️  Failed to download vem-linux-x86_64.rpm"
     
     # Download tar.gz files for Homebrew
     echo "  📥 Downloading Homebrew archives..."
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-x86_64.tar.gz" && echo "  ✅ Downloaded vem-0.1.0-202510191003-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-x86_64.tar.gz"
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-aarch64.tar.gz" && echo "  ✅ Downloaded vem-0.1.0-202510191003-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-aarch64.tar.gz"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-x86_64.tar.gz" && echo "  ✅ Downloaded vem-${FULL_VER}-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-${FULL_VER}-x86_64.tar.gz"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-aarch64.tar.gz" && echo "  ✅ Downloaded vem-${FULL_VER}-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-${FULL_VER}-aarch64.tar.gz"
     # Also download generic linux tar.gz files
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.tar.gz" && echo "  ✅ Downloaded vem-linux-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-x86_64.tar.gz"
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.tar.gz" && echo "  ✅ Downloaded vem-linux-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-aarch64.tar.gz"
     
     # Download zip files for generic use
     echo "  📥 Downloading ZIP archives..."
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-x86_64.zip" && echo "  ✅ Downloaded vem-0.1.0-202510191003-x86_64.zip" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-x86_64.zip"
-    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-aarch64.zip" && echo "  ✅ Downloaded vem-0.1.0-202510191003-aarch64.zip" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-aarch64.zip"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-x86_64.zip" && echo "  ✅ Downloaded vem-${FULL_VER}-x86_64.zip" || echo "  ⚠️  Failed to download vem-${FULL_VER}-x86_64.zip"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-${FULL_VER}-aarch64.zip" && echo "  ✅ Downloaded vem-${FULL_VER}-aarch64.zip" || echo "  ⚠️  Failed to download vem-${FULL_VER}-aarch64.zip"  
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.zip" && echo "  ✅ Downloaded vem-linux-x86_64.zip" || echo "  ⚠️  Failed to download vem-linux-x86_64.zip"
     wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.zip" && echo "  ✅ Downloaded vem-linux-aarch64.zip" || echo "  ⚠️  Failed to download vem-linux-aarch64.zip"
 done
@@ -412,9 +415,14 @@ set -e
 
 echo "🍺 Installing VEM via Homebrew..."
 
-# Add tap and install
-brew tap vim-environment-manager/tap https://github.com/vim-environment-manager/packages.git --subdirectory=repo/homebrew
-brew install vem
+# Try tap installation first
+if brew tap vim-environment-manager/tap 2>/dev/null; then
+    echo "✅ Tap added successfully"
+    brew install vem
+else
+    echo "⚠️  Tap not available, installing directly from Formula URL..."
+    brew install https://vim-environment-manager.github.io/packages/repo/homebrew/Formula/vem.rb
+fi
 
 echo "✅ VEM installed successfully!"
 echo "📖 Usage: vem --help"
@@ -558,9 +566,111 @@ echo "✅ Directory index files created"
 
 
 
+# Create standalone Homebrew tap repository
+echo "� Creating standalone Homebrew tap repository..."
+TAP_REPO_DIR="$REPO_ROOT/homebrew-tap"
+rm -rf "$TAP_REPO_DIR" 2>/dev/null || true
+mkdir -p "$TAP_REPO_DIR"
+
+# Copy Formula and README
+cp -r "$REPO_ROOT/repo/homebrew/Formula" "$TAP_REPO_DIR/"
+cp "$REPO_ROOT/repo/homebrew/README.md" "$TAP_REPO_DIR/"
+
+# Update README for standalone tap
+cat > "$TAP_REPO_DIR/README.md" << 'README_EOF'
+# VEM Homebrew Tap
+
+This is the official Homebrew tap for VEM (Vim Environment Manager).
+
+## Installation
+
+Add the tap and install VEM:
+
+```bash
+brew tap vim-environment-manager/tap
+brew install vem
+```
+
+## About VEM
+
+VEM (Vim Environment Manager) is a tool for managing Vim environments.
+
+- **Homepage**: https://github.com/ryo-arima/vem
+- **Documentation**: https://vim-environment-manager.github.io/packages/docs/
+
+## Support
+
+For issues and support, please visit the [VEM repository](https://github.com/ryo-arima/vem/issues).
+README_EOF
+
+# Create deployment script for the tap repository
+cat > "$TAP_REPO_DIR/deploy.sh" << 'DEPLOY_EOF'
+#!/bin/bash
+set -e
+
+echo "🚀 Deploying to homebrew-tap repository..."
+
+# Check if we're in the right directory
+if [ ! -d "Formula" ]; then
+    echo "❌ Formula directory not found. Run this from the homebrew-tap directory."
+    exit 1
+fi
+
+# Initialize or update git repository
+if [ ! -d ".git" ]; then
+    git init
+    git branch -M main
+    echo "📝 Git repository initialized"
+else
+    echo "📝 Using existing git repository"
+fi
+
+# Configure git user
+git config user.name "VEM Package Bot" || true
+git config user.email "packages@vim-environment-manager.github.io" || true
+
+# Add all files
+git add .
+
+# Commit changes
+if git diff --cached --quiet; then
+    echo "📝 No changes to commit"
+else
+    git commit -m "Update VEM Homebrew Formula v${VEM_VERSION} (${VEM_FULL_VERSION})"
+    echo "✅ Changes committed"
+fi
+
+# Check for remote
+if ! git remote get-url origin >/dev/null 2>&1; then
+    echo ""
+    echo "🔧 Setup required:"
+    echo "1. Create repository: https://github.com/vim-environment-manager/homebrew-tap"
+    echo "2. Add remote: git remote add origin https://github.com/vim-environment-manager/homebrew-tap.git"
+    echo "3. Push: git push -u origin main"
+    echo ""
+    echo "After setup, users can install with:"
+    echo "  brew tap vim-environment-manager/tap"
+    echo "  brew install vem"
+else
+    echo "🚀 Pushing to remote repository..."
+    git push origin main
+    echo "✅ Successfully pushed to homebrew-tap repository"
+    echo ""
+    echo "Users can now install with:"
+    echo "  brew tap vim-environment-manager/tap"
+    echo "  brew install vem"
+fi
+DEPLOY_EOF
+
+chmod +x "$TAP_REPO_DIR/deploy.sh"
+
+echo "✅ Standalone Homebrew tap created at: $TAP_REPO_DIR"
+
 echo "🎉 Package repositories built successfully!"
 echo "📂 Package directories: $REPO_ROOT/repo/{deb,rpm,homebrew}"
 echo "📂 Docs directory: $DOCS_DIR"
+echo "📂 Homebrew tap: $TAP_REPO_DIR"
 echo "🌐 Ready for deployment to GitHub Pages"
 echo ""
-echo "💡 Homebrew tap URL: brew tap vim-environment-manager/tap https://github.com/vim-environment-manager/packages.git --subdirectory=repo/homebrew"
+echo "🍺 To setup Homebrew tap:"
+echo "   cd $TAP_REPO_DIR && ./deploy.sh"

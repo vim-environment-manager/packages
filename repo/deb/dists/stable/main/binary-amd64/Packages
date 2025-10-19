@@ -2,7 +2,7 @@ Package: vem
 Version: 0.1.0
 Architecture: amd64
 Maintainer: runner <runner@localhost>
-Filename: pool/vem_0.1.0-202510191003_amd64.deb
+Filename: pool/vem-linux-x86_64.deb
 Size: 638046
 MD5sum: b0d568af4fb7d2c071a2d47a473c25b7
 SHA1: ff8be69135ad831aef8cec93bd432d49ab9b8e71

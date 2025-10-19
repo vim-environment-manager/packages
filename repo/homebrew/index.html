@@ -70,8 +70,17 @@
         <p>Add the tap and install VEM:</p>
         <pre>
 # Add tap and install
-brew tap vim-environment-manager/tap https://github.com/vim-environment-manager/packages.git --subdirectory=repo/homebrew
+brew tap vim-environment-manager/tap
 brew install vem
+        </pre>
+        
+        <p><strong>Note:</strong> This requires the separate <a href="https://github.com/vim-environment-manager/homebrew-tap">homebrew-tap</a> repository.</p>
+        
+        <h4>🔧 Alternative: Direct Formula Installation</h4>
+        <p>If the tap is not yet available, install directly from the Formula URL:</p>
+        <pre>
+# Install directly from Formula URL
+brew install https://vim-environment-manager.github.io/packages/repo/homebrew/Formula/vem.rb
         </pre>
     </div>
 
