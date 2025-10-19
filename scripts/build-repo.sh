@@ -260,29 +260,8 @@ end
 EOF
 echo "✅ Homebrew Formula created"
 
-# Create .gitignore for Homebrew repository
-cat > "$REPO_ROOT/repo/homebrew/.gitignore" << 'GITIGNORE_EOF'
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Archive files (these are served by GitHub Pages but not needed in git)
-archives/*.tar.gz
-archives/*.zip
-archives/*.tar.xz
-
-# Keep directory structure
-!archives/.gitkeep
-GITIGNORE_EOF
-
-# Create .gitkeep for archives directory
+# Create archives directory
 mkdir -p "$REPO_ROOT/repo/homebrew/archives"
-touch "$REPO_ROOT/repo/homebrew/archives/.gitkeep"
 
 # Create README.md for Homebrew tap
 cat > "$REPO_ROOT/repo/homebrew/README.md" << 'README_EOF'
@@ -295,7 +274,7 @@ This is the official Homebrew tap for VEM (Vim Environment Manager).
 Add the tap and install VEM:
 
 ```bash
-brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/repo/homebrew
+brew tap vim-environment-manager/tap https://github.com/vim-environment-manager/packages.git --subdirectory=repo/homebrew
 brew install vem
 ```
 
@@ -311,58 +290,64 @@ VEM (Vim Environment Manager) is a tool for managing Vim environments.
 For issues and support, please visit the [VEM repository](https://github.com/ryo-arima/vem/issues).
 README_EOF
 
-# Initialize Git repository for Homebrew tap
-echo "🔧 Initializing Git repository for Homebrew tap..."
-cd "$REPO_ROOT/repo/homebrew"
 
-# Check if already a git repository
-if [ ! -d ".git" ]; then
-    git init
-    echo "📝 Git repository initialized"
-else
-    echo "📝 Git repository already exists"
-fi
-
-# Configure git user if not set
-if [ -z "$(git config user.name 2>/dev/null)" ]; then
-    git config user.name "VEM Package Bot"
-    git config user.email "packages@vim-environment-manager.github.io"
-    echo "📝 Git user configured"
-fi
 
 # Add and commit files
-git add .
-if git diff --cached --quiet; then
-    echo "📝 No changes to commit"
-else
-    git commit -m "Update VEM Homebrew Formula v${VEM_VERSION}" || echo "📝 Commit created/updated"
-fi
+echo "✅ Homebrew Formula ready for Git repository tap"
 
-# Archive .git directory for GitHub hosting
-echo "📦 Creating .git archive for GitHub hosting..."
-tar -czf .git-repo.tar.gz .git/
-echo "✅ .git directory archived as .git-repo.tar.gz"
+# Optional: Setup separate tap repository
+# This creates a structure that can be pushed to vim-environment-manager/homebrew-tap
+echo "📝 Creating separate tap repository structure..."
+TAP_DIR="$REPO_ROOT/homebrew-tap-repo"
+rm -rf "$TAP_DIR" 2>/dev/null || true
+mkdir -p "$TAP_DIR"
 
-# Create git restoration script
-cat > restore-git.sh << 'RESTORE_EOF'
+# Copy necessary files for standalone tap
+cp -r "$REPO_ROOT/repo/homebrew/Formula" "$TAP_DIR/"
+cp "$REPO_ROOT/repo/homebrew/README.md" "$TAP_DIR/"
+
+# Create a simple script to push to separate tap repo
+cat > "$TAP_DIR/push-to-tap.sh" << 'TAP_PUSH_EOF'
 #!/bin/bash
-# Restore .git directory from archive for Homebrew tap functionality
+# Script to push this directory to vim-environment-manager/homebrew-tap repository
 set -e
-echo "🔧 Restoring .git directory for Homebrew tap..."
-if [ -f ".git-repo.tar.gz" ]; then
-    tar -xzf .git-repo.tar.gz
-    echo "✅ .git directory restored"
-    echo "🍺 Homebrew tap is now ready"
-else
-    echo "❌ .git-repo.tar.gz not found"
-    exit 1
-fi
-RESTORE_EOF
-chmod +x restore-git.sh
-echo "✅ Git restoration script created"
 
-echo "✅ Homebrew Git repository ready"
-cd "$REPO_ROOT"
+echo "🚀 Pushing to Homebrew tap repository..."
+
+# Initialize git if not already done
+if [ ! -d ".git" ]; then
+    git init
+    git branch -M main
+fi
+
+# Configure git
+git config user.name "VEM Package Bot" || true
+git config user.email "packages@vim-environment-manager.github.io" || true
+
+# Add files
+git add .
+git commit -m "Update VEM Homebrew Formula" || echo "No changes to commit"
+
+# Add remote if not exists
+if ! git remote get-url origin >/dev/null 2>&1; then
+    echo "Please add the remote repository:"
+    echo "git remote add origin https://github.com/vim-environment-manager/homebrew-tap.git"
+    echo "Then run: git push -u origin main"
+else
+    git push origin main
+fi
+
+echo "✅ Tap repository updated"
+echo "🍺 Users can now run: brew tap vim-environment-manager/tap"
+TAP_PUSH_EOF
+
+chmod +x "$TAP_DIR/push-to-tap.sh"
+
+echo "✅ Standalone tap repository created at $TAP_DIR"
+echo "💡 To set up the tap repository:"
+echo "   1. Create https://github.com/vim-environment-manager/homebrew-tap"
+echo "   2. cd $TAP_DIR && ./push-to-tap.sh"
+echo "   3. Users can then run: brew tap vim-environment-manager/tap"
 
 # Create installation scripts for docs directory
 echo "📜 Creating installation scripts..."
@@ -428,7 +413,7 @@ set -e
 echo "🍺 Installing VEM via Homebrew..."
 
 # Add tap and install
-brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/repo/homebrew
+brew tap vim-environment-manager/tap https://github.com/vim-environment-manager/packages.git --subdirectory=repo/homebrew
 brew install vem
 
 echo "✅ VEM installed successfully!"
@@ -567,255 +552,15 @@ fi
 create_directory_index "$REPO_ROOT/repo/homebrew/Formula" "Homebrew Formulas" "../" "Homebrew formula files"
 create_directory_index "$REPO_ROOT/repo/homebrew/archives" "Source Archives" "../" "Source archive files for Homebrew"
 
-# Create special .git directory index for Homebrew tap functionality
-echo "📝 Creating .git directory index for Homebrew tap..."
-create_git_directory_index() {
-    local git_path="$1"
-    
-    if [ -d "$git_path" ]; then
-        cat > "$git_path/index.html" << 'GIT_INDEX_EOF'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>.git Directory - VEM Homebrew Tap</title>
-    <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            padding: 2rem; 
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        .header { 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        .file-list {
-            margin: 1.5rem 0;
-        }
-        .file-item {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .file-item:last-child {
-            border-bottom: none;
-        }
-        .file-item:hover {
-            background-color: #f8f9fa;
-        }
-        .file-name {
-            font-family: 'Monaco', 'Menlo', monospace;
-        }
-        .file-name a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .file-name a:hover {
-            text-decoration: underline;
-        }
-        .file-size {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        .git-info {
-            background: #e7f3ff;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>📁 Git Repository Directory</h1>
-        <p>Git metadata for VEM Homebrew Tap</p>
-    </div>
 
-    <div class="git-info">
-        <h3>🔧 Homebrew Tap Information</h3>
-        <p>This directory contains the Git repository metadata required for Homebrew tap functionality.</p>
-        <p><strong>Tap URL:</strong> <code>brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/repo/homebrew</code></p>
-    </div>
-
-    <div class="file-list">
-        <h3>📦 Git Files</h3>
-GIT_INDEX_EOF
-
-        # List files and directories in .git
-        if [ -d "$git_path" ]; then
-            for item in "$git_path"/*; do
-                if [ -e "$item" ]; then
-                    item_name=$(basename "$item")
-                    if [ -d "$item" ]; then
-                        echo "        <div class=\"file-item\">" >> "$git_path/index.html"
-                        echo "            <span class=\"file-name\"><a href=\"$item_name/\">$item_name/</a></span>" >> "$git_path/index.html"
-                        echo "            <span class=\"file-size\">Directory</span>" >> "$git_path/index.html"
-                        echo "        </div>" >> "$git_path/index.html"
-                        
-                        # Recursively create index for subdirectories
-                        create_git_subdirectory_index "$item" "$item_name"
-                    elif [ -f "$item" ] && [ "$item_name" != "index.html" ]; then
-                        filesize=$(ls -lh "$item" | awk '{print $5}')
-                        echo "        <div class=\"file-item\">" >> "$git_path/index.html"
-                        echo "            <span class=\"file-name\"><a href=\"$item_name\">$item_name</a></span>" >> "$git_path/index.html"
-                        echo "            <span class=\"file-size\">$filesize</span>" >> "$git_path/index.html"
-                        echo "        </div>" >> "$git_path/index.html"
-                    fi
-                fi
-            done
-        fi
-
-        cat >> "$git_path/index.html" << 'GIT_INDEX_END'
-    </div>
-
-    <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
-        <p><a href="../">⬅️ Back to Homebrew Repository</a></p>
-    </div>
-</body>
-</html>
-GIT_INDEX_END
-    fi
-}
-
-# Function to create index files for .git subdirectories
-create_git_subdirectory_index() {
-    local dir_path="$1"
-    local dir_name="$2"
-    
-    cat > "$dir_path/index.html" << EOF
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$dir_name - Git Directory</title>
-    <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            padding: 2rem; 
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        .header { 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        .file-list {
-            margin: 1.5rem 0;
-        }
-        .file-item {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .file-item:last-child {
-            border-bottom: none;
-        }
-        .file-item:hover {
-            background-color: #f8f9fa;
-        }
-        .file-name {
-            font-family: 'Monaco', 'Menlo', monospace;
-        }
-        .file-name a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .file-name a:hover {
-            text-decoration: underline;
-        }
-        .file-size {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>📁 $dir_name</h1>
-        <p>Git directory contents</p>
-    </div>
-
-    <div class="file-list">
-        <h3>📦 Files</h3>
-EOF
-
-    # List files in directory
-    if [ -d "$dir_path" ]; then
-        for file in "$dir_path"/*; do
-            if [ -f "$file" ] && [ "$(basename "$file")" != "index.html" ]; then
-                filename=$(basename "$file")
-                filesize=$(ls -lh "$file" | awk '{print $5}')
-                echo "        <div class=\"file-item\">" >> "$dir_path/index.html"
-                echo "            <span class=\"file-name\"><a href=\"$filename\">$filename</a></span>" >> "$dir_path/index.html"
-                echo "            <span class=\"file-size\">$filesize</span>" >> "$dir_path/index.html"
-                echo "        </div>" >> "$dir_path/index.html"
-            elif [ -d "$file" ] && [ "$(basename "$file")" != "." ] && [ "$(basename "$file")" != ".." ]; then
-                dirname=$(basename "$file")
-                echo "        <div class=\"file-item\">" >> "$dir_path/index.html"
-                echo "            <span class=\"file-name\"><a href=\"$dirname/\">$dirname/</a></span>" >> "$dir_path/index.html"
-                echo "            <span class=\"file-size\">Directory</span>" >> "$dir_path/index.html"
-                echo "        </div>" >> "$dir_path/index.html"
-                
-                # Recursively create index for subdirectories
-                create_git_subdirectory_index "$file" "$dirname"
-            fi
-        done
-    fi
-
-    cat >> "$dir_path/index.html" << EOF
-    </div>
-
-    <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
-        <p><a href="../">⬅️ Back to Parent Directory</a></p>
-    </div>
-</body>
-</html>
-EOF
-}
-
-# Create .git directory index
-create_git_directory_index "$REPO_ROOT/repo/homebrew/.git"
 
 echo "✅ Directory index files created"
 
-# Ensure homebrew .git directory is included in the main repository
-echo "📝 Adding homebrew .git directory to main repository..."
-cd "$REPO_ROOT"
 
-# Remove homebrew from .gitignore if it exists
-if [ -f ".gitignore" ]; then
-    sed -i.bak '/^repo\/homebrew\/\.git/d' .gitignore 2>/dev/null || true
-    sed -i.bak '/^repo\/homebrew\/\.git\//d' .gitignore 2>/dev/null || true
-fi
-
-# Force add the homebrew .git directory to the main repository
-if [ -d "repo/homebrew/.git" ]; then
-    git add -f repo/homebrew/.git/
-    git add -f repo/homebrew/
-    echo "✅ Homebrew .git directory added to main repository"
-else
-    echo "⚠️  Homebrew .git directory not found"
-fi
 
 echo "🎉 Package repositories built successfully!"
 echo "📂 Package directories: $REPO_ROOT/repo/{deb,rpm,homebrew}"
 echo "📂 Docs directory: $DOCS_DIR"
 echo "🌐 Ready for deployment to GitHub Pages"
 echo ""
-echo "💡 Note: The homebrew directory contains a .git repository for Homebrew tap functionality"
-echo "💡 Make sure to commit the entire repo/homebrew directory including .git to your main repository"
+echo "💡 Homebrew tap URL: brew tap vim-environment-manager/tap https://github.com/vim-environment-manager/packages.git --subdirectory=repo/homebrew"
