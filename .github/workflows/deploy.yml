@@ -206,19 +206,38 @@ jobs:
         export VERSION_TAG=${VEM_VERSION_TAG}
         export VEM_DATE=${VEM_DATE}
         
-        # Build DEB documentation
-        cd "${GITHUB_WORKSPACE}/mdbook/deb" && mdbook build && cd "${GITHUB_WORKSPACE}"
+        # Debug: Check current directory and list contents
+        echo "Current directory: $(pwd)"
+        echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+        echo "Directory contents:"
+        ls -la
+        echo "Looking for mdbook directory:"
+        find . -name "mdbook" -type d
         
-        # Build RPM documentation  
-        cd "${GITHUB_WORKSPACE}/mdbook/rpm" && mdbook build && cd "${GITHUB_WORKSPACE}"
+        # Check if mdbook directories exist
+        if [ -d "mdbook/deb" ]; then
+          echo "✅ mdbook/deb exists"
+          cd mdbook/deb && mdbook build && cd ../..
+          cp -r mdbook/deb/book/* packages/deb/ || echo "Failed to copy deb documentation"
+        else
+          echo "❌ mdbook/deb does not exist"
+        fi
         
-        # Build Homebrew documentation
-        cd "${GITHUB_WORKSPACE}/mdbook/homebrew" && mdbook build && cd "${GITHUB_WORKSPACE}"
+        if [ -d "mdbook/rpm" ]; then
+          echo "✅ mdbook/rpm exists"
+          cd mdbook/rpm && mdbook build && cd ../..
+          cp -r mdbook/rpm/book/* packages/rpm/ || echo "Failed to copy rpm documentation"
+        else
+          echo "❌ mdbook/rpm does not exist"
+        fi
         
-        # Copy built documentation to packages directories
-        cp -r mdbook/deb/book/* packages/deb/
-        cp -r mdbook/rpm/book/* packages/rpm/
-        cp -r mdbook/homebrew/book/* packages/homebrew/
+        if [ -d "mdbook/homebrew" ]; then
+          echo "✅ mdbook/homebrew exists"
+          cd mdbook/homebrew && mdbook build && cd ../..
+          cp -r mdbook/homebrew/book/* packages/homebrew/ || echo "Failed to copy homebrew documentation"
+        else
+          echo "❌ mdbook/homebrew does not exist"
+        fi
     
     - name: Create repository metadata and installation scripts
       run: |
