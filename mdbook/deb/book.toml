@@ -1,0 +1,11 @@
+[book]
+authors = ["Ryo ARIMA"]
+language = "en"
+src = "src"
+title = "VEM DEB Repository"
+
+[build]
+build-dir = "../../deb"
+
+[output.html]
+destination = "../../deb"

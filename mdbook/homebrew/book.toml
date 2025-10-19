@@ -1,0 +1,11 @@
+[book]
+authors = ["Ryo ARIMA"]
+language = "en"
+src = "src"
+title = "VEM Homebrew Tap"
+
+[build]
+build-dir = "../../homebrew"
+
+[output.html]
+destination = "../../homebrew"

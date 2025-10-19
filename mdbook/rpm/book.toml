@@ -1,0 +1,11 @@
+[book]
+authors = ["Ryo ARIMA"]
+language = "en"
+src = "src"
+title = "VEM RPM Repository"
+
+[build]
+build-dir = "../../rpm"
+
+[output.html]
+destination = "../../rpm"

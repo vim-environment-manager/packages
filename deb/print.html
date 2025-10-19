@@ -1,0 +1,580 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title></title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="vem-deb-repository"><a class="header" href="#vem-deb-repository">VEM DEB Repository</a></h1>
+<p>Welcome to the VEM (Vim Environment Manager) DEB Repository! This repository provides DEB packages for Debian, Ubuntu, and other Debian-based distributions.</p>
+<h2 id="-what-is-vem"><a class="header" href="#-what-is-vem">📦 What is VEM?</a></h2>
+<p>VEM (Vim Environment Manager) is a powerful tool for managing Vim environments, allowing you to easily switch between different Vim configurations and plugins.</p>
+<h2 id="-quick-start"><a class="header" href="#-quick-start">🚀 Quick Start</a></h2>
+<p>To get started with VEM on your Debian/Ubuntu system:</p>
+<ol>
+<li>
+<p><strong>Add the repository</strong>:</p>
+<pre><code class="language-bash">echo "deb https://vim-environment-manager.github.io/packages/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
+</code></pre>
+</li>
+<li>
+<p><strong>Update package list</strong>:</p>
+<pre><code class="language-bash">sudo apt update
+</code></pre>
+</li>
+<li>
+<p><strong>Install VEM</strong>:</p>
+<pre><code class="language-bash">sudo apt install vem
+</code></pre>
+</li>
+</ol>
+<h2 id="-supported-architectures"><a class="header" href="#-supported-architectures">🎯 Supported Architectures</a></h2>
+<ul>
+<li><strong>amd64</strong> (x86_64)</li>
+<li><strong>arm64</strong> (aarch64)</li>
+</ul>
+<h2 id="-repository-information"><a class="header" href="#-repository-information">📋 Repository Information</a></h2>
+<ul>
+<li><strong>Repository URL</strong>: <code>https://vim-environment-manager.github.io/packages/deb</code></li>
+<li><strong>Distribution</strong>: <code>stable</code></li>
+<li><strong>Component</strong>: <code>main</code></li>
+<li><strong>Package Format</strong>: DEB</li>
+</ul>
+<h2 id="-links"><a class="header" href="#-links">🔗 Links</a></h2>
+<ul>
+<li><a href="https://github.com/ryo-arima/vem">GitHub Repository</a></li>
+<li><a href="https://vim-environment-manager.github.io/packages/">Main Package Repository</a></li>
+<li><a href="../install/">Installation Scripts</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installation-guide"><a class="header" href="#installation-guide">Installation Guide</a></h1>
+<p>This guide covers multiple ways to install VEM on Debian-based systems.</p>
+<h2 id="method-1-repository-installation-recommended"><a class="header" href="#method-1-repository-installation-recommended">Method 1: Repository Installation (Recommended)</a></h2>
+<h3 id="step-1-add-repository"><a class="header" href="#step-1-add-repository">Step 1: Add Repository</a></h3>
+<p>Add the VEM repository to your system:</p>
+<pre><code class="language-bash">echo "deb https://vim-environment-manager.github.io/packages/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
+</code></pre>
+<h3 id="step-2-update-package-list"><a class="header" href="#step-2-update-package-list">Step 2: Update Package List</a></h3>
+<pre><code class="language-bash">sudo apt update
+</code></pre>
+<h3 id="step-3-install-vem"><a class="header" href="#step-3-install-vem">Step 3: Install VEM</a></h3>
+<pre><code class="language-bash">sudo apt install vem
+</code></pre>
+<h2 id="method-2-one-liner-installation"><a class="header" href="#method-2-one-liner-installation">Method 2: One-liner Installation</a></h2>
+<p>For a quick installation, use our one-liner script:</p>
+<pre><code class="language-bash">curl -fsSL https://vim-environment-manager.github.io/packages/install/install-deb.sh | bash
+</code></pre>
+<h2 id="method-3-manual-deb-installation"><a class="header" href="#method-3-manual-deb-installation">Method 3: Manual DEB Installation</a></h2>
+<p>Download and install the DEB package directly:</p>
+<h3 id="for-amd64-systems"><a class="header" href="#for-amd64-systems">For amd64 systems:</a></h3>
+<pre><code class="language-bash">wget https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem_0.1.0_amd64.deb
+sudo dpkg -i vem_0.1.0_amd64.deb
+sudo apt-get install -f  # Fix dependencies if needed
+</code></pre>
+<h3 id="for-arm64-systems"><a class="header" href="#for-arm64-systems">For arm64 systems:</a></h3>
+<pre><code class="language-bash">wget https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem_0.1.0_arm64.deb
+sudo dpkg -i vem_0.1.0_arm64.deb
+sudo apt-get install -f  # Fix dependencies if needed
+</code></pre>
+<h2 id="verification"><a class="header" href="#verification">Verification</a></h2>
+<p>After installation, verify VEM is working:</p>
+<pre><code class="language-bash">vem --version
+vem --help
+</code></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><a href="./packages.html">Learn about available packages</a></li>
+<li><a href="./repository.html">Set up your repository</a></li>
+<li><a href="./troubleshooting.html">Troubleshooting common issues</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="package-details"><a class="header" href="#package-details">Package Details</a></h1>
+<h2 id="available-packages"><a class="header" href="#available-packages">Available Packages</a></h2>
+<h3 id="vem-core-package"><a class="header" href="#vem-core-package">VEM Core Package</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Package</th><th>Architecture</th><th>Version</th><th>Size</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>vem_0.1.0_amd64.deb</code></td><td>amd64</td><td>0.1.0</td><td>~624 KB</td><td>VEM for 64-bit Intel/AMD systems</td></tr>
+<tr><td><code>vem_0.1.0_arm64.deb</code></td><td>arm64</td><td>0.1.0</td><td>~596 KB</td><td>VEM for 64-bit ARM systems</td></tr>
+</tbody></table>
+</div>
+<h2 id="package-information"><a class="header" href="#package-information">Package Information</a></h2>
+<h3 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h3>
+<p>VEM requires the following packages:</p>
+<ul>
+<li><code>vim</code> - The Vim text editor</li>
+<li>Standard system libraries (automatically resolved)</li>
+</ul>
+<h3 id="files-installed"><a class="header" href="#files-installed">Files Installed</a></h3>
+<p>When you install VEM, the following files are added to your system:</p>
+<pre><code>/usr/local/bin/vem                    # Main VEM executable
+/usr/local/share/man/man1/vem.1       # Manual page
+/usr/local/share/doc/vem/README.md    # Documentation
+/usr/local/share/doc/vem/LICENSE      # License file
+</code></pre>
+<h3 id="post-installation"><a class="header" href="#post-installation">Post-installation</a></h3>
+<p>After installation, VEM is immediately available in your PATH. You can run:</p>
+<pre><code class="language-bash"># Show version
+vem --version
+
+# Show help
+vem --help
+
+# Start using VEM
+vem init
+</code></pre>
+<h2 id="package-checksums"><a class="header" href="#package-checksums">Package Checksums</a></h2>
+<p>For security verification:</p>
+<h3 id="vem_010_amd64deb"><a class="header" href="#vem_010_amd64deb">vem_0.1.0_amd64.deb</a></h3>
+<ul>
+<li><strong>SHA256</strong>: <code>98bb2b3d11d74ef1e51d8aa20a1eb3d6d9286a2be364ba4032fa880ee4174cf6</code></li>
+</ul>
+<h3 id="vem_010_arm64deb"><a class="header" href="#vem_010_arm64deb">vem_0.1.0_arm64.deb</a></h3>
+<ul>
+<li><strong>SHA256</strong>: <code>4ee2ffebbd1d6eb0611673c8b44e43e1e372f69e5e789b338d983da2146516f7</code></li>
+</ul>
+<h2 id="maintenance"><a class="header" href="#maintenance">Maintenance</a></h2>
+<h3 id="updates"><a class="header" href="#updates">Updates</a></h3>
+<p>VEM will automatically check for updates when installed via the repository. Update with:</p>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade vem
+</code></pre>
+<h3 id="removal"><a class="header" href="#removal">Removal</a></h3>
+<p>To remove VEM:</p>
+<pre><code class="language-bash">sudo apt remove vem
+</code></pre>
+<p>To remove VEM and its configuration:</p>
+<pre><code class="language-bash">sudo apt purge vem
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="repository-setup"><a class="header" href="#repository-setup">Repository Setup</a></h1>
+<h2 id="repository-structure"><a class="header" href="#repository-structure">Repository Structure</a></h2>
+<p>The VEM DEB repository follows standard Debian repository conventions:</p>
+<pre><code>deb/
+├── dists/
+│   └── stable/
+│       ├── Release
+│       └── main/
+│           ├── binary-amd64/
+│           │   ├── Packages
+│           │   └── Packages.gz
+│           └── binary-arm64/
+│               ├── Packages
+│               └── Packages.gz
+└── pool/
+    └── main/
+        └── v/
+            └── vem/
+                ├── vem_0.1.0_amd64.deb
+                └── vem_0.1.0_arm64.deb
+</code></pre>
+<h2 id="adding-the-repository"><a class="header" href="#adding-the-repository">Adding the Repository</a></h2>
+<h3 id="method-1-manual-addition"><a class="header" href="#method-1-manual-addition">Method 1: Manual Addition</a></h3>
+<p>Add the repository to your sources list:</p>
+<pre><code class="language-bash">echo "deb https://vim-environment-manager.github.io/packages/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
+</code></pre>
+<h3 id="method-2-using-add-apt-repository"><a class="header" href="#method-2-using-add-apt-repository">Method 2: Using add-apt-repository</a></h3>
+<pre><code class="language-bash">sudo add-apt-repository "deb https://vim-environment-manager.github.io/packages/deb stable main"
+</code></pre>
+<h2 id="repository-configuration"><a class="header" href="#repository-configuration">Repository Configuration</a></h2>
+<h3 id="sources-list-entry"><a class="header" href="#sources-list-entry">Sources List Entry</a></h3>
+<p>The complete sources.list entry is:</p>
+<pre><code>deb https://vim-environment-manager.github.io/packages/deb stable main
+</code></pre>
+<p>Where:</p>
+<ul>
+<li><strong>deb</strong>: Package type</li>
+<li><strong>https://vim-environment-manager.github.io/packages/deb</strong>: Repository URL</li>
+<li><strong>stable</strong>: Distribution name</li>
+<li><strong>main</strong>: Component name</li>
+</ul>
+<h3 id="repository-metadata"><a class="header" href="#repository-metadata">Repository Metadata</a></h3>
+<p>The repository includes:</p>
+<ul>
+<li><strong>Release file</strong>: Contains repository metadata and checksums</li>
+<li><strong>Packages files</strong>: List all available packages with metadata</li>
+<li><strong>Compressed packages</strong>: Gzipped versions for faster downloads</li>
+</ul>
+<h2 id="gpg-signing"><a class="header" href="#gpg-signing">GPG Signing</a></h2>
+<p>Currently, the repository is not GPG signed. This is indicated by:</p>
+<pre><code class="language-bash">sudo apt update
+# You may see: "Repository does not have a Release file signed"
+</code></pre>
+<p>For production use, we recommend implementing GPG signing for enhanced security.</p>
+<h2 id="advanced-configuration"><a class="header" href="#advanced-configuration">Advanced Configuration</a></h2>
+<h3 id="pin-priority"><a class="header" href="#pin-priority">Pin Priority</a></h3>
+<p>To prefer VEM packages from this repository:</p>
+<p>Create <code>/etc/apt/preferences.d/vem</code>:</p>
+<pre><code>Package: vem
+Pin: origin vim-environment-manager.github.io
+Pin-Priority: 1000
+</code></pre>
+<h3 id="repository-testing"><a class="header" href="#repository-testing">Repository Testing</a></h3>
+<p>Verify the repository is working:</p>
+<pre><code class="language-bash"># List available packages from VEM repository
+apt-cache policy vem
+
+# Show package information
+apt-cache show vem
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
+<h2 id="common-issues-and-solutions"><a class="header" href="#common-issues-and-solutions">Common Issues and Solutions</a></h2>
+<h3 id="repository-access-issues"><a class="header" href="#repository-access-issues">Repository Access Issues</a></h3>
+<h4 id="issue-repository-not-found-or-404-errors"><a class="header" href="#issue-repository-not-found-or-404-errors">Issue: "Repository not found" or 404 errors</a></h4>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p>Verify the repository URL is correct:</p>
+<pre><code class="language-bash">curl -I https://vim-environment-manager.github.io/packages/deb/dists/stable/Release
+</code></pre>
+</li>
+<li>
+<p>Check your sources.list entry:</p>
+<pre><code class="language-bash">cat /etc/apt/sources.list.d/vem.list
+</code></pre>
+</li>
+<li>
+<p>Update package lists:</p>
+<pre><code class="language-bash">sudo apt update
+</code></pre>
+</li>
+</ol>
+<h4 id="issue-release-file-signed-warnings"><a class="header" href="#issue-release-file-signed-warnings">Issue: "Release file signed" warnings</a></h4>
+<p><strong>Solution:</strong>
+This is expected as the repository is not currently GPG signed. You can safely ignore this warning or suppress it:</p>
+<pre><code class="language-bash">sudo apt update 2&gt;/dev/null || sudo apt update
+</code></pre>
+<h3 id="package-installation-issues"><a class="header" href="#package-installation-issues">Package Installation Issues</a></h3>
+<h4 id="issue-package-vem-not-found"><a class="header" href="#issue-package-vem-not-found">Issue: "Package vem not found"</a></h4>
+<p><strong>Troubleshooting steps:</strong></p>
+<ol>
+<li>
+<p>Verify repository is added:</p>
+<pre><code class="language-bash">grep -r "vim-environment-manager" /etc/apt/sources.list.d/
+</code></pre>
+</li>
+<li>
+<p>Update package cache:</p>
+<pre><code class="language-bash">sudo apt update
+</code></pre>
+</li>
+<li>
+<p>Search for the package:</p>
+<pre><code class="language-bash">apt-cache search vem
+</code></pre>
+</li>
+<li>
+<p>Check available versions:</p>
+<pre><code class="language-bash">apt-cache policy vem
+</code></pre>
+</li>
+</ol>
+<h4 id="issue-dependency-conflicts"><a class="header" href="#issue-dependency-conflicts">Issue: Dependency conflicts</a></h4>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p>Try installing with dependency resolution:</p>
+<pre><code class="language-bash">sudo apt install -f vem
+</code></pre>
+</li>
+<li>
+<p>If conflicts persist, install dependencies manually:</p>
+<pre><code class="language-bash">sudo apt install vim
+sudo apt install vem
+</code></pre>
+</li>
+</ol>
+<h3 id="architecture-issues"><a class="header" href="#architecture-issues">Architecture Issues</a></h3>
+<h4 id="issue-no-package-available-for-your-architecture"><a class="header" href="#issue-no-package-available-for-your-architecture">Issue: "No package available for your architecture"</a></h4>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p>Check your system architecture:</p>
+<pre><code class="language-bash">dpkg --print-architecture
+</code></pre>
+</li>
+<li>
+<p>Verify supported architectures:</p>
+<ul>
+<li>amd64 (Intel/AMD 64-bit)</li>
+<li>arm64 (ARM 64-bit)</li>
+</ul>
+</li>
+<li>
+<p>For unsupported architectures, try manual compilation from source.</p>
+</li>
+</ol>
+<h3 id="network-issues"><a class="header" href="#network-issues">Network Issues</a></h3>
+<h4 id="issue-download-timeouts-or-slow-downloads"><a class="header" href="#issue-download-timeouts-or-slow-downloads">Issue: Download timeouts or slow downloads</a></h4>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Use a different mirror or CDN if available</li>
+<li>Check your internet connection</li>
+<li>Try downloading manually:
+<pre><code class="language-bash">wget https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem_0.1.0_amd64.deb
+sudo dpkg -i vem_0.1.0_amd64.deb
+</code></pre>
+</li>
+</ol>
+<h3 id="permission-issues"><a class="header" href="#permission-issues">Permission Issues</a></h3>
+<h4 id="issue-permission-denied-during-installation"><a class="header" href="#issue-permission-denied-during-installation">Issue: "Permission denied" during installation</a></h4>
+<p><strong>Solution:</strong>
+Ensure you're using sudo for installation commands:</p>
+<pre><code class="language-bash">sudo apt install vem
+</code></pre>
+<h3 id="post-installation-issues"><a class="header" href="#post-installation-issues">Post-Installation Issues</a></h3>
+<h4 id="issue-command-not-found-vem"><a class="header" href="#issue-command-not-found-vem">Issue: "Command not found: vem"</a></h4>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p>Reload your shell:</p>
+<pre><code class="language-bash">source ~/.bashrc
+# or
+hash -r
+</code></pre>
+</li>
+<li>
+<p>Check if VEM is installed:</p>
+<pre><code class="language-bash">which vem
+dpkg -l | grep vem
+</code></pre>
+</li>
+<li>
+<p>Verify PATH includes <code>/usr/local/bin</code>:</p>
+<pre><code class="language-bash">echo $PATH
+</code></pre>
+</li>
+</ol>
+<h2 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h2>
+<p>If you continue to experience issues:</p>
+<ol>
+<li><strong>Check the logs</strong>: Look at <code>/var/log/apt/</code> for detailed error messages</li>
+<li><strong>GitHub Issues</strong>: Report bugs at <a href="https://github.com/ryo-arima/vem/issues">VEM GitHub Repository</a></li>
+<li><strong>Documentation</strong>: Visit the <a href="https://vim-environment-manager.github.io/packages/">main documentation</a></li>
+</ol>
+<h2 id="diagnostic-commands"><a class="header" href="#diagnostic-commands">Diagnostic Commands</a></h2>
+<p>Run these commands to gather system information for bug reports:</p>
+<pre><code class="language-bash"># System info
+uname -a
+lsb_release -a
+
+# APT configuration
+apt-config dump | grep -i vem
+
+# Repository status
+apt-cache policy vem
+
+# Package information
+dpkg -l | grep vem
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

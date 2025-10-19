@@ -1,0 +1,170 @@
+# Build and Deploy VEM Package Repository
+name: Build and Deploy Packages
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  VEM_VERSION: "0.1.0-20251019"
+  VEM_SOURCE_URL: "https://github.com/ryo-arima/vem/releases/tag/v0.1.0-20251019"
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y rpm alien dpkg-dev reprepro createrepo-c gnupg2
+        npm install -g npm@latest
+        
+        # Install mdbook
+        curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.36/mdbook-v0.4.36-x86_64-unknown-linux-gnu.tar.gz | tar xz
+        sudo mv mdbook /usr/local/bin/
+    
+    - name: Create directory structure
+      run: |
+        mkdir -p packages/{deb,rpm,homebrew}
+        mkdir -p packages/deb/pool/main/v/vem  
+        mkdir -p packages/deb/dists/stable/main/binary-amd64
+        mkdir -p packages/deb/dists/stable/main/binary-arm64
+    
+    - name: Download VEM packages
+      run: |        
+        # Download DEB packages
+        wget -O packages/deb/pool/main/v/vem/vem_0.1.0_amd64.deb https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem_0.1.0_amd64.deb || echo "amd64 deb not found"
+        wget -O packages/deb/pool/main/v/vem/vem_0.1.0_arm64.deb https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem_0.1.0_arm64.deb || echo "arm64 deb not found"
+        
+        # Download RPM packages
+        wget -O packages/rpm/vem-0.1.0-1.x86_64.rpm https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-0.1.0-1.x86_64.rpm || echo "x86_64 rpm not found"
+        wget -O packages/rpm/vem-linux-x86_64.rpm https://github.com/ryo-arima/vem/releases/download/v0.1.0-20251019/vem-linux-x86_64.rpm || echo "linux x86_64 rpm not found"
+    
+    - name: Create DEB repository metadata
+      run: |
+        cd packages/deb
+        
+        # Create Packages files for each architecture
+        if [ -f "pool/main/v/vem/vem_0.1.0_amd64.deb" ]; then
+          dpkg-scanpackages pool/main/v/vem /dev/null | gzip -9c > dists/stable/main/binary-amd64/Packages.gz
+          gunzip -c dists/stable/main/binary-amd64/Packages.gz > dists/stable/main/binary-amd64/Packages
+        fi
+        
+        if [ -f "pool/main/v/vem/vem_0.1.0_arm64.deb" ]; then
+          dpkg-scanpackages pool/main/v/vem /dev/null | gzip -9c > dists/stable/main/binary-arm64/Packages.gz
+          gunzip -c dists/stable/main/binary-arm64/Packages.gz > dists/stable/main/binary-arm64/Packages
+        fi
+        
+        # Create Release file
+        cd dists/stable
+        cat > Release << EOF
+        Archive: stable
+        Component: main
+        Origin: VEM Repository
+        Label: VEM
+        Architecture: amd64 arm64
+        Date: $(date -Ru)
+        Description: VEM (Vim Environment Manager) DEB Repository
+        EOF
+        
+        # Add checksums to Release file
+        echo "MD5Sum:" >> Release
+        find . -name "Packages*" -exec md5sum {} \; | sed 's|\./||' | awk '{printf " %s %16d %s\n", $1, $2, $3}' >> Release
+        
+        echo "SHA1:" >> Release  
+        find . -name "Packages*" -exec sha1sum {} \; | sed 's|\./||' | awk '{printf " %s %16d %s\n", $1, $2, $3}' >> Release
+        
+        echo "SHA256:" >> Release
+        find . -name "Packages*" -exec sha256sum {} \; | sed 's|\./||' | awk '{printf " %s %16d %s\n", $1, $2, $3}' >> Release
+    
+    - name: Create RPM repository metadata
+      run: |
+        cd packages/rpm
+        # Create RPM repository with createrepo
+        createrepo .
+        
+        # Create repo file
+        cat > vem.repo << EOF
+        [vem]
+        name=VEM Repository
+        baseurl=https://vim-environment-manager.github.io/packages/rpm
+        enabled=1
+        gpgcheck=0
+        EOF
+    
+    - name: Generate Homebrew formula and tap
+      run: |
+        mkdir -p packages/homebrew/Formula
+        ./scripts/generate-homebrew.sh
+    
+    - name: Build mdbook documentation
+      run: |
+        # Build DEB documentation
+        cd mdbook/deb && mdbook build && cd ../..
+        
+        # Build RPM documentation  
+        cd mdbook/rpm && mdbook build && cd ../..
+        
+        # Build Homebrew documentation
+        cd mdbook/homebrew && mdbook build && cd ../..
+    
+    - name: Create repository metadata and installation scripts
+      run: |
+        ./scripts/create-repo-metadata.sh
+    
+    - name: Generate main index page
+      run: |
+        ./scripts/generate-index.sh
+    
+    - name: Verify build output
+      run: |
+        echo "Build completed successfully!"
+        ls -la packages/
+        
+        # Check if key files exist
+        [ -f "packages/index.html" ] && echo "✅ Main index.html exists" || echo "❌ Main index.html missing"
+        [ -f "packages/deb/index.html" ] && echo "✅ DEB index.html exists" || echo "❌ DEB index.html missing"
+        [ -f "packages/rpm/index.html" ] && echo "✅ RPM index.html exists" || echo "❌ RPM index.html missing"
+        [ -f "packages/homebrew/index.html" ] && echo "✅ Homebrew index.html exists" || echo "❌ Homebrew index.html missing"
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+      if: github.ref == 'refs/heads/main'
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        path: './packages'
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      if: github.ref == 'refs/heads/main'
+      uses: actions/deploy-pages@v4

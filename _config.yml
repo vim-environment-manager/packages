@@ -1,0 +1,15 @@
+theme: jekyll-theme-minimal
+title: VEM Package Repository
+description: Official package distribution for VEM (Vim Environment Manager)
+show_downloads: true
+google_analytics: # Add your GA tracking ID here if needed
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+exclude:
+  - scripts/
+  - .github/
+  - .gitignore
+  - README.md
