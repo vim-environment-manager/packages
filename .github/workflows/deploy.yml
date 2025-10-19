@@ -38,13 +38,12 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
     
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y rpm alien dpkg-dev reprepro createrepo-c gnupg2
-        npm install -g npm@latest
         
         # Install mdbook
         curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.36/mdbook-v0.4.36-x86_64-unknown-linux-gnu.tar.gz | tar xz
