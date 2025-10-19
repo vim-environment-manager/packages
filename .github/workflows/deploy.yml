@@ -48,7 +48,8 @@ jobs:
     - name: Verify deployment files
       run: |
         echo "🔍 Verifying deployment files..."
-        [ -f "docs/index.html" ] && echo "✅ Root index.html exists" || { echo "❌ Root index.html missing"; exit 1; }
+        [ -f "index.html" ] && echo "✅ Root index.html exists" || { echo "❌ Root index.html missing"; exit 1; }
+        [ -f "docs/index.html" ] && echo "✅ Docs index.html exists" || { echo "❌ Docs index.html missing"; exit 1; }
         [ -f "docs/base/index.html" ] && echo "✅ Base docs exist" || { echo "❌ Base docs missing"; exit 1; }
         [ -f "docs/deb/index.html" ] && echo "✅ DEB docs exist" || { echo "❌ DEB docs missing"; exit 1; }
         [ -f "docs/rpm/index.html" ] && echo "✅ RPM docs exist" || { echo "❌ RPM docs missing"; exit 1; }
