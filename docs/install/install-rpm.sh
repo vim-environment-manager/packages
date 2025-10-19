@@ -7,7 +7,7 @@ echo "🎩 Installing VEM via RPM repository..."
 sudo tee /etc/yum.repos.d/vem.repo <<EOF
 [vem]
 name=VEM Repository
-baseurl=https://vim-environment-manager.github.io/packages/rpm
+baseurl=https://vim-environment-manager.github.io/packages/repo/rpm
 enabled=1
 gpgcheck=0
 EOF

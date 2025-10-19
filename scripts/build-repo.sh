@@ -26,17 +26,17 @@ echo "🏷️  Latest: ${VEM_FULL_VERSION}"
 
 # Create directory structure
 echo "📁 Creating directory structure..."
-mkdir -p "$REPO_ROOT"/{deb,rpm,homebrew}
-mkdir -p "$REPO_ROOT/deb/pool/main/v/vem"
-mkdir -p "$REPO_ROOT/deb/dists/stable/main/binary-amd64"
-mkdir -p "$REPO_ROOT/deb/dists/stable/main/binary-arm64"
-mkdir -p "$REPO_ROOT/rpm/repodata"
-mkdir -p "$REPO_ROOT/homebrew/Formula"
+mkdir -p "$REPO_ROOT/repo"/{deb,rpm,homebrew}
+mkdir -p "$REPO_ROOT/repo/deb/pool/main/v/vem"
+mkdir -p "$REPO_ROOT/repo/deb/dists/stable/main/binary-amd64"
+mkdir -p "$REPO_ROOT/repo/deb/dists/stable/main/binary-arm64"
+mkdir -p "$REPO_ROOT/repo/rpm/repodata"
+mkdir -p "$REPO_ROOT/repo/homebrew/Formula"
 
 # Clean mdbook files from package repositories (remove only common static site artifacts)
 echo "🧹 Cleaning mdbook files from package repositories..."
 for repo_dir in deb rpm homebrew; do
-    DIR="$REPO_ROOT/$repo_dir"
+    DIR="$REPO_ROOT/repo/$repo_dir"
     if [ -d "$DIR" ]; then
         # remove site files that may have been copied accidentally
         rm -f "$DIR"/.nojekyll 2>/dev/null || true
@@ -64,37 +64,37 @@ for FULL_VER in ${VERSIONS}; do
     echo "🔽 Processing version: ${VER} (${FULL_VER})"
     
     # Remove existing placeholder files first
-    rm -f "$REPO_ROOT/deb/pool/vem_${FULL_VER}_*.deb" 2>/dev/null || true
-    rm -f "$REPO_ROOT/rpm/rpms/vem-${FULL_VER}.x86_64.rpm" 2>/dev/null || true
-    rm -f "$REPO_ROOT/homebrew/archives/vem-${FULL_VER}-*" 2>/dev/null || true
+    rm -f "$REPO_ROOT/repo/deb/pool/vem_${FULL_VER}_*.deb" 2>/dev/null || true
+    rm -f "$REPO_ROOT/repo/rpm/rpms/vem-${FULL_VER}.x86_64.rpm" 2>/dev/null || true
+    rm -f "$REPO_ROOT/repo/homebrew/archives/vem-${FULL_VER}-*" 2>/dev/null || true
     
     # Download DEB packages (actual files found in GitHub releases)
     echo "  📥 Downloading DEB packages..."
-    wget -q -P "$REPO_ROOT/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_0.1.0-202510191003_amd64.deb" && echo "  ✅ Downloaded vem_0.1.0-202510191003_amd64.deb" || echo "  ⚠️  Failed to download vem_0.1.0-202510191003_amd64.deb"
-    wget -q -P "$REPO_ROOT/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_0.1.0-202510191003_arm64.deb" && echo "  ✅ Downloaded vem_0.1.0-202510191003_arm64.deb" || echo "  ⚠️  Failed to download vem_0.1.0-202510191003_arm64.deb"
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_0.1.0-202510191003_amd64.deb" && echo "  ✅ Downloaded vem_0.1.0-202510191003_amd64.deb" || echo "  ⚠️  Failed to download vem_0.1.0-202510191003_amd64.deb"
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem_0.1.0-202510191003_arm64.deb" && echo "  ✅ Downloaded vem_0.1.0-202510191003_arm64.deb" || echo "  ⚠️  Failed to download vem_0.1.0-202510191003_arm64.deb"
     # Also download linux generic deb files
-    wget -q -P "$REPO_ROOT/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.deb" && echo "  ✅ Downloaded vem-linux-x86_64.deb" || echo "  ⚠️  Failed to download vem-linux-x86_64.deb"
-    wget -q -P "$REPO_ROOT/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.deb" && echo "  ✅ Downloaded vem-linux-aarch64.deb" || echo "  ⚠️  Failed to download vem-linux-aarch64.deb"
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.deb" && echo "  ✅ Downloaded vem-linux-x86_64.deb" || echo "  ⚠️  Failed to download vem-linux-x86_64.deb"
+    wget -q -P "$REPO_ROOT/repo/deb/pool" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.deb" && echo "  ✅ Downloaded vem-linux-aarch64.deb" || echo "  ⚠️  Failed to download vem-linux-aarch64.deb"
     
     # Download RPM packages
     echo "  📥 Downloading RPM packages..."
-    wget -q -P "$REPO_ROOT/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003.x86_64.rpm" && echo "  ✅ Downloaded vem-0.1.0-202510191003.x86_64.rpm" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003.x86_64.rpm"
-    wget -q -P "$REPO_ROOT/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.rpm" && echo "  ✅ Downloaded vem-linux-x86_64.rpm" || echo "  ⚠️  Failed to download vem-linux-x86_64.rpm"
+    wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003.x86_64.rpm" && echo "  ✅ Downloaded vem-0.1.0-202510191003.x86_64.rpm" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003.x86_64.rpm"
+    wget -q -P "$REPO_ROOT/repo/rpm/rpms" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.rpm" && echo "  ✅ Downloaded vem-linux-x86_64.rpm" || echo "  ⚠️  Failed to download vem-linux-x86_64.rpm"
     
     # Download tar.gz files for Homebrew
     echo "  📥 Downloading Homebrew archives..."
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-x86_64.tar.gz" && echo "  ✅ Downloaded vem-0.1.0-202510191003-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-x86_64.tar.gz"
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-aarch64.tar.gz" && echo "  ✅ Downloaded vem-0.1.0-202510191003-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-aarch64.tar.gz"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-x86_64.tar.gz" && echo "  ✅ Downloaded vem-0.1.0-202510191003-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-x86_64.tar.gz"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-aarch64.tar.gz" && echo "  ✅ Downloaded vem-0.1.0-202510191003-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-aarch64.tar.gz"
     # Also download generic linux tar.gz files
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.tar.gz" && echo "  ✅ Downloaded vem-linux-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-x86_64.tar.gz"
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.tar.gz" && echo "  ✅ Downloaded vem-linux-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-aarch64.tar.gz"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.tar.gz" && echo "  ✅ Downloaded vem-linux-x86_64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-x86_64.tar.gz"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.tar.gz" && echo "  ✅ Downloaded vem-linux-aarch64.tar.gz" || echo "  ⚠️  Failed to download vem-linux-aarch64.tar.gz"
     
     # Download zip files for generic use
     echo "  📥 Downloading ZIP archives..."
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-x86_64.zip" && echo "  ✅ Downloaded vem-0.1.0-202510191003-x86_64.zip" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-x86_64.zip"
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-aarch64.zip" && echo "  ✅ Downloaded vem-0.1.0-202510191003-aarch64.zip" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-aarch64.zip"
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.zip" && echo "  ✅ Downloaded vem-linux-x86_64.zip" || echo "  ⚠️  Failed to download vem-linux-x86_64.zip"
-    wget -q -P "$REPO_ROOT/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.zip" && echo "  ✅ Downloaded vem-linux-aarch64.zip" || echo "  ⚠️  Failed to download vem-linux-aarch64.zip"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-x86_64.zip" && echo "  ✅ Downloaded vem-0.1.0-202510191003-x86_64.zip" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-x86_64.zip"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-0.1.0-202510191003-aarch64.zip" && echo "  ✅ Downloaded vem-0.1.0-202510191003-aarch64.zip" || echo "  ⚠️  Failed to download vem-0.1.0-202510191003-aarch64.zip"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-x86_64.zip" && echo "  ✅ Downloaded vem-linux-x86_64.zip" || echo "  ⚠️  Failed to download vem-linux-x86_64.zip"
+    wget -q -P "$REPO_ROOT/repo/homebrew/archives" "https://github.com/ryo-arima/vem/releases/download/${TAG}/vem-linux-aarch64.zip" && echo "  ✅ Downloaded vem-linux-aarch64.zip" || echo "  ⚠️  Failed to download vem-linux-aarch64.zip"
 done
 
 # Create DEB repository metadata
@@ -104,11 +104,11 @@ if command -v docker >/dev/null 2>&1; then
     cd "$REPO_ROOT"
     
     # Check if we have actual .deb files or placeholders
-    DEB_COUNT=$(find "$REPO_ROOT/deb/pool" -name "*.deb" -type f -exec file {} \; | grep -c "Debian binary package" || true)
+    DEB_COUNT=$(find "$REPO_ROOT/repo/deb/pool" -name "*.deb" -type f -exec file {} \; | grep -c "Debian binary package" || true)
     
     if [ "$DEB_COUNT" -gt 0 ]; then
         # We have real DEB files, scan them
-        docker run --rm -v "$REPO_ROOT/deb:/workspace" \
+        docker run --rm -v "$REPO_ROOT/repo/deb:/workspace" \
             debian:bookworm-slim bash -c "
             cd /workspace && \
             apt-get update && apt-get install -y dpkg-dev gzip && \
@@ -130,7 +130,7 @@ RELEASE_EOF
     else
         # We have placeholder files, create minimal metadata
         echo "  📝 Creating minimal metadata for placeholder files..."
-        docker run --rm -v "$REPO_ROOT/deb:/workspace" \
+        docker run --rm -v "$REPO_ROOT/repo/deb:/workspace" \
             debian:bookworm-slim bash -c "
             cd /workspace && \
             apt-get update && apt-get install -y dpkg-dev gzip && \
@@ -153,7 +153,7 @@ RELEASE_EOF
     fi
     echo "✅ DEB repository metadata created with Docker"
 elif command -v dpkg-scanpackages >/dev/null 2>&1; then
-    cd "$REPO_ROOT/deb"
+    cd "$REPO_ROOT/repo/deb"
     dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
     dpkg-scanpackages pool/ > dists/stable/main/binary-arm64/Packages
     gzip -f -k dists/stable/main/binary-amd64/Packages
@@ -181,11 +181,11 @@ if command -v docker >/dev/null 2>&1; then
     echo "  🐳 Using Docker for RPM repository creation..."
     
     # Check if we have actual .rpm files or placeholders
-    RPM_COUNT=$(find "$REPO_ROOT/rpm" -name "*.rpm" -type f -exec file {} \; | grep -c "RPM" || true)
+    RPM_COUNT=$(find "$REPO_ROOT/repo/rpm" -name "*.rpm" -type f -exec file {} \; | grep -c "RPM" || true)
     
     if [ "$RPM_COUNT" -gt 0 ]; then
         # We have real RPM files, create repo
-        docker run --rm -v "$REPO_ROOT/rpm:/workspace" \
+        docker run --rm -v "$REPO_ROOT/repo/rpm:/workspace" \
             rockylinux:9-minimal bash -c "
             cd /workspace && \
             microdnf install -y createrepo_c && \
@@ -194,7 +194,7 @@ if command -v docker >/dev/null 2>&1; then
     else
         # We have placeholder files, create minimal metadata
         echo "  📝 Creating minimal RPM repository metadata for placeholder files..."
-        docker run --rm -v "$REPO_ROOT/rpm:/workspace" \
+        docker run --rm -v "$REPO_ROOT/repo/rpm:/workspace" \
             rockylinux:9-minimal bash -c "
             cd /workspace && \
             microdnf install -y createrepo_c && \
@@ -204,10 +204,10 @@ if command -v docker >/dev/null 2>&1; then
     fi
     echo "✅ RPM repository metadata created with Docker"
 elif command -v createrepo_c >/dev/null 2>&1; then
-    createrepo_c "$REPO_ROOT/rpm"
+    createrepo_c "$REPO_ROOT/repo/rpm"
     echo "✅ RPM repository metadata created"
 elif command -v createrepo >/dev/null 2>&1; then
-    createrepo "$REPO_ROOT/rpm"
+    createrepo "$REPO_ROOT/repo/rpm"
     echo "✅ RPM repository metadata created"
 else
     echo "⚠️  Neither Docker nor createrepo found, skipping RPM metadata"
@@ -215,31 +215,31 @@ fi
 
 # Create Homebrew Formula
 echo "🍺 Creating Homebrew Formula..."
-mkdir -p "$REPO_ROOT/homebrew/Formula"
+mkdir -p "$REPO_ROOT/repo/homebrew/Formula"
 
 # Calculate SHA256 for downloaded files
 ARM64_SHA=""
 X86_64_SHA=""
 
-if [ -f "$REPO_ROOT/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz" ]; then
-    ARM64_SHA=$(shasum -a 256 "$REPO_ROOT/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz" | cut -d' ' -f1)
+if [ -f "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz" ]; then
+    ARM64_SHA=$(shasum -a 256 "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz" | cut -d' ' -f1)
 fi
 
-if [ -f "$REPO_ROOT/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz" ]; then
-    X86_64_SHA=$(shasum -a 256 "$REPO_ROOT/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz" | cut -d' ' -f1)
+if [ -f "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz" ]; then
+    X86_64_SHA=$(shasum -a 256 "$REPO_ROOT/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz" | cut -d' ' -f1)
 fi
 
-cat > "$REPO_ROOT/homebrew/Formula/vem.rb" << EOF
+cat > "$REPO_ROOT/repo/homebrew/Formula/vem.rb" << EOF
 class Vem < Formula
   desc "Vim Environment Manager"
   homepage "https://github.com/ryo-arima/vem"
   version "${VEM_VERSION}"
   
   if Hardware::CPU.arm?
-    url "https://vim-environment-manager.github.io/packages/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz"
+    url "https://vim-environment-manager.github.io/packages/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-aarch64.tar.gz"
     sha256 "${ARM64_SHA:-PLACEHOLDER_ARM64_SHA}"
   else
-    url "https://vim-environment-manager.github.io/packages/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz"
+    url "https://vim-environment-manager.github.io/packages/repo/homebrew/archives/vem-${VEM_FULL_VERSION}-x86_64.tar.gz"
     sha256 "${X86_64_SHA:-PLACEHOLDER_X86_64_SHA}"
   end
 
@@ -266,7 +266,7 @@ set -e
 echo "🐧 Installing VEM via DEB repository..."
 
 # Add repository
-echo "deb https://vim-environment-manager.github.io/packages/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
+echo "deb https://vim-environment-manager.github.io/packages/repo/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
 
 # Update and install
 sudo apt update
@@ -287,7 +287,7 @@ echo "🎩 Installing VEM via RPM repository..."
 sudo tee /etc/yum.repos.d/vem.repo <<EOF
 [vem]
 name=VEM Repository
-baseurl=https://vim-environment-manager.github.io/packages/rpm
+baseurl=https://vim-environment-manager.github.io/packages/repo/rpm
 enabled=1
 gpgcheck=0
 EOF
@@ -318,7 +318,7 @@ set -e
 echo "🍺 Installing VEM via Homebrew..."
 
 # Add tap and install
-brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/homebrew
+brew tap vim-environment-manager/tap https://vim-environment-manager.github.io/packages/repo/homebrew
 brew install vem
 
 echo "✅ VEM installed successfully!"
@@ -329,6 +329,6 @@ EOF
 chmod +x "$DOCS_DIR/install"/*.sh
 
 echo "🎉 Package repositories built successfully!"
-echo "📂 Package directories: $REPO_ROOT/{deb,rpm,homebrew}"
+echo "📂 Package directories: $REPO_ROOT/repo/{deb,rpm,homebrew}"
 echo "📂 Docs directory: $DOCS_DIR"
 echo "🌐 Ready for deployment to GitHub Pages"

@@ -4,7 +4,7 @@ set -e
 echo "🐧 Installing VEM via DEB repository..."
 
 # Add repository
-echo "deb https://vim-environment-manager.github.io/packages/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
+echo "deb https://vim-environment-manager.github.io/packages/repo/deb stable main" | sudo tee /etc/apt/sources.list.d/vem.list
 
 # Update and install
 sudo apt update
